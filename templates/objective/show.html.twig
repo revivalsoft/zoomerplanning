@@ -1,0 +1,54 @@
+{% extends 'base_okr.html.twig' %}
+
+{% block title %}Détails Objectif
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<h2 class="fw-bold mb-2">{{ objective.title }}</h2>
+		<p class="text-muted mb-4">{{ objective.description }}</p>
+
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h4 class="mb-0">🎯 Résultats clés</h4>
+			<a href="{{ path('keyresult_new', {objectiveId: objective.id}) }}" class="btn btn-success btn-sm">
+				<i class="bi bi-plus-circle me-1"></i>
+				Ajouter un résultat clé
+			</a>
+		</div>
+
+		<div class="card shadow-sm">
+			<ul class="list-group list-group-flush">
+				{% for kr in objective.keyResults %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<div>
+							<strong>{{ kr.title }}</strong>
+							<span class="badge bg-info text-dark ms-2">{{ kr.progress }}%</span>
+						</div>
+						<div class="d-flex gap-2">
+							<a href="{{ path('keyresult_edit', {id: kr.id}) }}" class="btn btn-sm btn-outline-primary">
+								<i class="bi bi-pencil me-1"></i>
+								Éditer
+							</a>
+							<form method="post" action="{{ path('keyresult_delete', {id: kr.id}) }}" onsubmit="return confirm('Confirmer la suppression ?');">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ kr.id) }}">
+								<button class="btn btn-sm btn-outline-danger">
+									<i class="bi bi-trash me-1"></i>
+									Supprimer
+								</button>
+							</form>
+						</div>
+					</li>
+				{% else %}
+					<li class="list-group-item text-muted text-center">Aucun résultat clé défini.</li>
+				{% endfor %}
+			</ul>
+		</div>
+
+		<div class="mt-4 text-center">
+			<a href="{{ path('objective_index') }}" class="btn btn-outline-secondary">
+				<i class="bi bi-arrow-left me-1"></i>
+				Retour aux objectifs
+			</a>
+		</div>
+	</div>
+{% endblock %}

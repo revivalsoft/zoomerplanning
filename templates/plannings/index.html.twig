@@ -1,0 +1,348 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Planning
+{% endblock %}
+
+{% block body %}
+
+	<style>
+		/* Conteneur pour gérer le scroll */
+		.table-container {
+			width: 100%;
+			overflow-x: auto;
+		}
+
+
+		/* Fixe la première colonne */
+		th.tdplanningres,
+		th.thplanningmarge,
+		td.tdplanningres {
+			position: sticky;
+			left: 0;
+			z-index: 10; /* Suffisant pour être au-dessus */
+			background-color: white;
+			border: 1px solid black;
+		}
+		th.thplanningmarge {
+			background-color: grey;
+			z-index: 30;
+		}
+
+		/* Fixe l'en-tête en haut */
+		thead th {
+			position: sticky;
+			top: 0;
+			z-index: 20; /* Doit être au-dessus du reste */
+			/* background-color: grey; */
+			border: 1px solid black;
+		}
+
+		/* Uniformisation des bordures */
+		td.tdplanning,
+		th.thplanning {
+			border: 1px solid black;
+			background-clip: padding-box;
+		}
+
+		@media print {
+			/* Masquer les éléments non imprimables */
+			.no-print,
+			.btn,
+			.modal,
+			.modal-content,
+			select,
+			input[type="radio"],
+			input[type="checkbox"],
+			input[type="button"],
+			input[type="submit"],
+			textarea,
+			button {
+				display: none !important;
+			}
+			.table-wrapper {
+				width: 100% !important;
+				min-width: unset !important;
+			}
+			table {
+				width: 100% !important;
+				table-layout: auto !important;
+			}
+			.table-container {
+				overflow: visible !important;
+			}
+			html,
+			body {
+				overflow: visible !important;
+			}
+		}
+	</style>
+
+	<div style="background: yellow; padding: 10px;" class="text-center mb-3 no-print">
+		<button class="btn btn-primary" onclick="window.print()">
+			🖨️ Imprimer le planning
+		</button>
+	</div>
+
+	{% set idplan = 0 %}
+	{% set incremnombreressources = 1 %}
+
+	{# // début modal #}
+	<div id="myModal" class="modal" style="width:100%">
+		<div class="modal-content" style="width:60%">
+
+			<div id="nomressource"></div>
+			<div id="fonctionressource"></div>
+			<div id="numligne"></div>
+			<div id="date"></div>
+			<div id="sigle"></div>
+
+			<hr/>
+
+			<div style="text-decoration:" underline"">Note :</div>
+			<table>
+				<tr>
+					<td>
+						<textarea cols="20" rows="3" id="note" style="resize:none" maxlength="100"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>
+
+						<input type="button" id="update-note-btn" value="Enregistrer">
+
+						<input type="button" id="fermer" value="Fermer">
+					</td>
+				</tr>
+			</table>
+
+		</div>
+	</div>
+	{# // fin modal #}
+
+	{% set increm = 1  %}
+
+	{# calculs en début de template #}
+	{% set prevYear = an - 1 %}
+	{% set nextYear = an + 1 %}
+
+	{# le mois précédent et son année #}
+	{% set prevMonth  = (mois == 1 ? 12 : mois - 1) %}
+	{% set prevMonthY = (mois == 1 ? an - 1 : an) %}
+
+	{# le mois suivant et son année #}
+	{% set nextMonth  = (mois == 12 ? 1 : mois + 1) %}
+	{% set nextMonthY = (mois == 12 ? an + 1 : an) %}
+
+	<div class="planning">
+		<center>
+			<h3 style="font-weight:bold">{{ moisencours }}
+				{{ an }}{{ ' - '}}{{ nomgroupe }}</h3>
+
+
+			<p>
+
+				<div class="d-flex justify-content-center flex-wrap gap-3 my-3">
+					<a href="{{ path('app_plannings', { groupe: groupe.id,mois: mois, an: prevYear }) }}" class="btn btn-outline-secondary px-4 py-2">🗓️ -1 an</a>
+					<a href="{{ path('app_plannings', { groupe: groupe.id,mois: prevMonth, an: prevMonthY }) }}" class="btn btn-outline-secondary px-4 py-2">
+						⬅️ Mois précédent</a>
+					<a href="{{ path('app_plannings', { groupe: groupe.id,mois: nextMonth, an: nextMonthY }) }}" class="btn btn-outline-secondary px-4 py-2">Mois suivant ➡️</a>
+					<a href="{{ path('app_plannings', { groupe: groupe.id,mois: mois, an: nextYear }) }}" class="btn btn-outline-secondary px-4 py-2">+1 an 🗓️</a>
+				</div>
+				{# <form id="action">
+																													<input type="radio" name="choix" value="delete_plage" id="delete_plage">
+																													<label for="delete_plage" style="color:red;cursor:pointer" class="no-print">
+																														Suppression
+																													</label>
+																													<input type="radio" name="choix" value="insert_plage" id="insert_plage">
+																													<label for="insert_plage" style="font-weight:bold;cursor:pointer" class="no-print">
+																														Insertion plages
+																													</label>
+																													<input type="radio" name="choix" value="insert_note" id="insert_note">
+																													<label for="insert_note" style="cursor:pointer" class="no-print">
+																														Insertion notes
+																													</label>
+																												</form> #}
+
+				{# <form id="action" class="mb-3">
+																									<div class="form-check form-check-inline">
+																										<input class="form-check-input" type="radio" name="choix" id="delete_plage" value="delete_plage">
+																										<label class="form-check-label text-danger fw-bold no-print" for="delete_plage" style="cursor:pointer;">
+																											Suppression
+																										</label>
+																									</div>
+																				
+																									<div class="form-check form-check-inline">
+																										<input class="form-check-input" type="radio" name="choix" id="insert_plage" value="insert_plage">
+																										<label class="form-check-label fw-bold no-print" for="insert_plage" style="cursor:pointer;">
+																											Insertion plages
+																										</label>
+																									</div>
+																				
+																									<div class="form-check form-check-inline">
+																										<input class="form-check-input" type="radio" name="choix" id="insert_note" value="insert_note">
+																										<label class="form-check-label no-print" for="insert_note" style="cursor:pointer;">
+																											Insertion notes
+																										</label>
+																									</div>
+																								</form> #}
+				<div
+					class="btn-group" role="group" aria-label="Choix d'action">
+					{# <form id="action" class="mb-3">
+																					<input type="radio" class="btn-check" name="choix" id="delete_plage" value="delete_plage" autocomplete="off">
+																					<label class="btn btn-outline-danger no-print" for="delete_plage">
+																						Suppression
+																					</label>
+															
+																					<input type="radio" class="btn-check" name="choix" id="insert_plage" value="insert_plage" autocomplete="off">
+																					<label class="btn btn-outline-primary fw-bold no-print" for="insert_plage">
+																						Insertion plages
+																					</label>
+															
+																					<input type="radio" class="btn-check" name="choix" id="insert_note" value="insert_note" autocomplete="off">
+																					<label class="btn btn-outline-secondary no-print" for="insert_note">
+																						Insertion notes
+																					</label>
+																				</form> #}
+					<form id="action" class="mb-3 d-flex flex-wrap gap-2">
+						<input type="radio" class="btn-check" name="choix" id="delete_plage" value="delete_plage" autocomplete="off">
+						<label class="btn btn-outline-danger no-print d-flex align-items-center gap-2" for="delete_plage">
+							🗑️ Suppression
+						</label>
+
+						<input type="radio" class="btn-check" name="choix" id="insert_plage" value="insert_plage" autocomplete="off">
+						<label class="btn btn-outline-primary fw-bold no-print d-flex align-items-center gap-2" for="insert_plage">
+							➕ Insertion plages
+						</label>
+
+						<input type="radio" class="btn-check" name="choix" id="insert_note" value="insert_note" autocomplete="off">
+						<label class="btn btn-outline-secondary no-print d-flex align-items-center gap-2" for="insert_note">
+							📝 Insertion notes
+						</label>
+					</form>
+
+
+				</div>
+
+
+				<hr class="no-print"/>
+
+				<div>
+					<select id="selection">
+						<option value="">-- Sélectionnez une catégorie --</option>
+						{% for categorie in categories %}
+							<option value="{{ categorie.id }}">{{ categorie.nom }}</option>
+						{% endfor %}
+					</select>
+					<select id="selection_plage">
+						<option value="">-- Sélectionnez une plage --</option>
+					</select>
+				</div>
+			</p>
+			{# div pour colonne de gauche fixe #}
+			<div class="table-container">
+
+				<table style="width:100%">
+					<thead>
+						<tr>
+							<th class="thplanningmarge" rowspan="2"></th>
+							{% for i in range(1,nombrejoursmois) %}
+								{% if i == today %}
+									<th class="thplanning" style="background-color:yellow">{{ i }}</th>
+								{% else %}
+									<th class="thplanning">{{ i }}</th>
+								{% endif %}
+							{% endfor %}
+						</tr>
+						<tr>
+							{% for i in tabjour %}
+								{% if (i == 'SA') or (i == 'DI') or (increm in tabjf) %}
+									<th class="thplanningferie">{{ i }}</th>
+								{% else %}
+									<th class="thplanning">{{ i }}</th>
+								{% endif %}
+								{% set increm = increm + 1 %}
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for ressource in ressources %}
+							{% set incremnombreressources = incremnombreressources + 1 %}
+							{% set idres=ressource.id %}
+							{% set ligne = 1 %}
+							<tr>
+								{# La première ligne traite le rowspan de la 1ère colonne #}
+								<th class="tdplanningres" id="r{{ ressource.id }}" rowspan={{nombrelignesadmin}} style="font-size:smaller" title="{{ ressource.fonction }}">{{ ressource.nom }}</th>
+
+								{% for i in range(1,nombrejoursmois) %}
+
+									{% set note =  planningnote[idres][ligne][i] %}
+									{% set idplan = planningidplan[idres][ligne][i] %}
+
+									{# note soulignement #}
+									{% set ud = "none" %}
+
+									{% if note|length > 0 %}
+										{% set ud = "underline" %}
+									{% endif %}
+
+									<td class="tdplanning" id="{{ ressource.id }}-{{ i }}-{{ ligne }}-{{ idplan }}-{{ mois }}-{{ an }}" style="text-decoration: {{ ud }};text-align:center;background-color: {{ planningcf[idres][ligne][i]}};color:{{ planningct[idres][ligne][i]}} " title="{{ note }}">{{ plannings[idres][ligne][i] }}</td>
+
+								{% endfor %}
+							</tr>
+							{% if nombrelignesadmin > 1 %}
+								{% for ligne in range (2,nombrelignesadmin) %}
+									<tr>
+
+										{% for i in range(1,nombrejoursmois) %}
+
+											{% set note = planningnote[idres][ligne][i]  %}
+											{% set idplan = planningidplan[idres][ligne][i]  %}
+
+											{# note soulignement #}
+											{% set ud = "none" %}
+
+											{% if note|length > 0 %}
+												{% set ud = "underline" %}
+											{% endif %}
+
+											<td class="tdplanning" id="{{ ressource.id }}-{{ i }}-{{ ligne }}-{{ idplan }}-{{ mois }}-{{ an }}" style="text-decoration:{{ ud }};text-align:center;background-color:{{ planningcf[idres][ligne][i]}};color:{{ planningct[idres][ligne][i]}}" title="{{ note }}">{{ plannings[idres][ligne][i] }}</td>
+
+										{% endfor %}
+									</tr>
+								{% endfor %}
+							{% endif %}
+
+							{# Si on opte pour la ligne des dates en tête de chaque ressource #}
+							{% if numjourentreressources == 1 and incremnombreressources <= nombreressources %}
+								<tr>
+									<th class="thplanningmarge" rowspan="2"></th>
+									{% for i in range(1,nombrejoursmois) %}
+										{% if i == today %}
+											<th class="thplanning" style="width:3%;background-color:yellow">{{ i }}</th>
+										{% else %}
+											<th class="thplanning" style="width:3%">{{ i }}</th>
+										{% endif %}
+									{% endfor %}
+								</tr>
+								<tr>
+									{% set increm =  1 %}
+									{% for i in tabjour %}
+										{% if (i == 'SA') or (i == 'DI') or (increm in tabjf) %}
+											<th class="thplanningferie">{{ i }}</th>
+										{% else %}
+											<th class="thplanning">{{ i }}</th>
+										{% endif %}
+										{% set increm = increm + 1 %}
+									{% endfor %}
+								</tr>
+							{% endif %}
+							{# Fin option numjourentreressources #}
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</center>
+	</div>
+
+
+{% endblock %}

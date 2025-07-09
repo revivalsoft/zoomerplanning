@@ -1,0 +1,77 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Modifier la tâche
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div class="card shadow rounded-3">
+			<div class="card-header bg-warning text-dark">
+				<h2 class="mb-0">Modifier la tâche</h2>
+			</div>
+			<div class="card-body">
+				{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+				{% if form.vars.value.project is not null %}
+					<a href="{{ path('project_show', { id: form.vars.value.project.id }) }}" class="btn btn-outline-secondary mb-4">
+						<i class="bi bi-arrow-left"></i>
+						Retour au projet
+					</a>
+				{% endif %}
+
+				{{ form_start(form) }}
+
+				<div class="mb-3">
+					{{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+					{{ form_errors(form.name) }}
+				</div>
+
+				<div class="row">
+					<div class="col-md-6 mb-3">
+						{{ form_label(form.startDate, null, {'label_attr': {'class': 'form-label'}}) }}
+						{{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.startDate) }}
+					</div>
+					<div class="col-md-6 mb-3">
+						{{ form_label(form.endDate, null, {'label_attr': {'class': 'form-label'}}) }}
+						{{ form_widget(form.endDate, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.endDate) }}
+					</div>
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(form.status, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+					{{ form_errors(form.status) }}
+				</div>
+
+				{# ✅ CSRF token #}
+				{{ form_row(form._token) }}
+
+				<div class="d-flex justify-content-end mt-4">
+					<button type="submit" class="btn btn-success">
+						<i class="bi bi-check-circle"></i>
+						Mettre à jour
+					</button>
+
+				</div>
+
+				{{ form_end(form, {'render_rest': false}) }}
+
+				<div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content border-danger">
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

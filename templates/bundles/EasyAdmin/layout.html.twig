@@ -1,0 +1,12 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<style>
+		@media(max-width: 768px) {
+			#navigation-toggler {
+				transform: scale(1.3) !important;
+			}
+		}
+	</style>
+{% endblock %}

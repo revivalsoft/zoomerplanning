@@ -1,0 +1,72 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Notifications envoyées
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h2 class="mb-4">Mes notifications envoyées</h2>
+
+		<form method="GET" action="{{ path('admin_notifications_envoyees') }}" class="mb-3">
+			<div class="input-group">
+				<input type="text" name="q" class="form-control" placeholder="Filtrer par message ou destinataire" value="{{ q|default('') }}">
+				<button class="btn btn-outline-secondary" type="submit">Filtrer</button>
+			</div>
+		</form>
+
+		{% if notifications is empty %}
+			<div class="alert alert-info">Aucune notification envoyée.</div>
+		{% else %}
+			<table class="table table-bordered table-hover align-middle">
+				<thead class="table-light">
+					<tr>
+						<th>Message</th>
+						<th>Destinataire</th>
+						<th>Envoyée le</th>
+						<th>Vue</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for notif in notifications %}
+						{% for dest in notif.destinataires %}
+							<tr>
+								<td>{{ notif.message|u.truncate(60) }}</td>
+								<td>{{ dest.ressource.nom }}</td>
+								<td>{{ notif.createdAt|date('d/m/Y H:i') }}</td>
+								{# <td>
+																	{% if dest.vue %}
+																		<span class="badge bg-success">Vue</span>
+																	{% else %}
+																		<span class="badge bg-secondary">Non vue</span>
+																	{% endif %}
+																</td> #}
+								<td>
+									{% if dest.vue %}
+										<span class="badge bg-success">Vue</span>
+										{% if dest.dateVue %}
+											<br><small class="text-muted">{{ dest.dateVue|date('d/m/Y à H:i') }}</small>
+										{% endif %}
+									{% else %}
+										<span class="badge bg-secondary">Non vue</span>
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					{% endfor %}
+				</tbody>
+			</table>
+
+			{% if totalPages > 1 %}
+				<nav>
+					<ul class="pagination justify-content-center">
+						{% for i in 1..totalPages %}
+							<li class="page-item{% if i == page %} active{% endif %}">
+								<a class="page-link" href="{{ path('admin_notifications_envoyees', { page: i, q: search }) }}">{{ i }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</nav>
+			{% endif %}
+		{% endif %}
+	</div>
+{% endblock %}

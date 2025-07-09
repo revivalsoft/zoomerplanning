@@ -1,0 +1,28 @@
+{% extends 'base_entry.html.twig' %}
+{% block title %}Message reçu
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div class="card mx-auto shadow" style="max-width: 600px;">
+			<div class="card-header">Notification ZoomerPlanning</div>
+			<div class="card-body">
+				<p>
+					<strong>Expéditeur :</strong>
+					{{ notification.auteur.nom }}</p>
+				<p>
+					<strong>Destinataire :</strong>
+					{{ ressource.nom }}</p>
+
+				<hr>
+
+				<p class="card-text">{{ notification.message|raw }}</p>
+
+				<p class="text-muted text-end">
+					Envoyée le
+					{{ notification.createdAt|date('d/m/Y à H:i') }}
+				</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

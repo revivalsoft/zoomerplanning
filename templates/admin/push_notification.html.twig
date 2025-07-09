@@ -1,0 +1,57 @@
+{% extends 'base_notif_admin.html.twig' %}
+
+{% block title %}Envoyer une notification
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div
+			class="mx-auto" style="max-width: 600px;">
+
+			{# ✅ Affichage des messages flash #}
+			{% for label, messages in app.flashes %}
+				{% for message in messages %}
+					<div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+					</div>
+				{% endfor %}
+			{% endfor %}
+
+			<h2 class="mb-4 text-center">Notifications</h2>
+
+			{{ form_start(form) }}
+
+			<div class="mb-3">
+				{{ form_label(form.ressources) }}
+				{{ form_widget(form.ressources, {'attr': {'class': 'form-control select2'}}) }}
+				{{ form_errors(form.ressources) }}
+			</div>
+
+			<div class="mb-3">
+				{{ form_label(form.message) }}
+				{{ form_widget(form.message, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+				{{ form_errors(form.message) }}
+			</div>
+
+			{{ form_end(form, { 'render_rest': true }) }}
+
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script>
+		$(document).ready(function () {
+$('.select2').select2({placeholder: "Sélectionnez un ou plusieurs destinataires", allowClear: true, width: '100%'});
+});
+	</script>
+{% endblock %}

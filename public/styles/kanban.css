@@ -1,0 +1,51 @@
+/* kanban */
+
+.kanban {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.kanban-column {
+    flex: 1;
+    min-width: 250px;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-column h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    color: #343a40;
+}
+
+ul.sortable {
+    min-height: 300px;
+    padding: 0.5rem;
+    background-color: #ffffff;
+    border: 1px dashed #ced4da;
+    border-radius: 0.5rem;
+}
+
+ul.sortable.drag-over {
+    background-color: #e0f7fa;
+    border: 2px dashed #0dcaf0;
+}
+
+li.list-group-item {
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    cursor: grab;
+}
+
+li.list-group-item:hover {
+    background-color: #f1f1f1;
+}
+
+.btn-sm {
+    margin-left: 0.25rem;
+}

@@ -1,0 +1,65 @@
+{# templates/import_model/form.html.twig #}
+
+{# {% extends 'base.admin.html.twig' %}
+
+{% block title %}Importation d'un modèle
+{% endblock %}
+
+{% block body %}
+	<h1>Importation d'un modèle</h1>
+
+	<form method="post" action="{{ path('import_model') }}">
+		<label for="model_file">Fichier modèle :</label>
+		<select name="model_file" id="model_file" required>
+			{% for file in files %}
+				<option value="{{ file }}">{{ file|replace({'\\':'/'})|split('/')|last }}</option>
+			{% endfor %}
+		</select>
+
+		<label for="new_project_name">Nom du projet :</label>
+		<input type="text" name="new_project_name" id="new_project_name" required>
+
+		<label for="start_date">Nouvelle date de début :</label>
+		<input type="date" name="start_date" id="start_date">
+
+		<button type="submit">Importer</button>
+	</form>
+{% endblock %} #}
+
+{% extends 'base_admin.html.twig' %}
+	{% block title %}
+Importation d'un modèle
+{% endblock %}
+
+	{% block body %}
+		<div class="container my-4" style="max-width: 600px;"> <div class="card shadow-sm">
+			<div class="card-header bg-primary text-white">
+				<h3 class="mb-0">Importation d'un modèle</h3>
+			</div>
+			<div class="card-body">
+				<form method="post" action="{{ path('import_model') }}">
+					<div class="mb-3">
+						<label for="model_file" class="form-label">Fichier modèle :</label>
+						<select name="model_file" id="model_file" class="form-select" required>
+							{% for file in files %}
+								<option value="{{ file }}">{{ file|replace({'\\':'/'})|split('/')|last }}</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label for="new_project_name" class="form-label">Nom du projet :</label>
+						<input type="text" name="new_project_name" id="new_project_name" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="start_date" class="form-label">Nouvelle date de début :</label>
+						<input type="date" name="start_date" id="start_date" class="form-control">
+					</div>
+
+					<button type="submit" class="btn btn-primary w-100">Importer</button>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

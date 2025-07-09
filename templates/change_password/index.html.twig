@@ -1,0 +1,69 @@
+{% extends 'base_user.html.twig' %}
+
+{% block body %}
+	<div class="container mt-5">
+		<h2 class="text-center mb-4">Changer mon mot de passe</h2>
+
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label }} alert-dismissible fade show col-md-6 mx-auto" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		<div class="card col-md-6 col-lg-5 mx-auto shadow">
+			<div class="card-body">
+				{{ form_start(form) }}
+
+				<div class="mb-3">
+					{{ form_label(form.currentPassword, 'Mot de passe actuel', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.currentPassword, {'attr': {'class': 'form-control password-field'}}) }}
+					{{ form_errors(form.currentPassword) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(form.newPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.newPassword.first, {'attr': {'class': 'form-control password-field'}}) }}
+					{{ form_errors(form.newPassword.first) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(form.newPassword.second, 'Confirmation du mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.newPassword.second, {'attr': {'class': 'form-control password-field'}}) }}
+					{{ form_errors(form.newPassword.second) }}
+				</div>
+
+				<div class="form-check mb-3">
+					<input class="form-check-input" type="checkbox" id="showPasswordToggle">
+					<label class="form-check-label" for="showPasswordToggle">
+						Afficher les mots de passe
+					</label>
+				</div>
+
+				<div class="d-grid">
+					<button type="submit" class="btn btn-primary">Valider</button>
+				</div>
+
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+const toggle = document.getElementById('showPasswordToggle');
+const passwordFields = document.querySelectorAll('.password-field');
+
+toggle.addEventListener('change', function () {
+passwordFields.forEach(input => {
+input.type = this.checked ? 'text' : 'password';
+});
+});
+});
+	</script>
+{% endblock %}

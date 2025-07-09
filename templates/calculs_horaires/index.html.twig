@@ -1,0 +1,69 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Calculs horaires
+{% endblock %}
+
+{% block body %}
+	<style>
+		.table-loading {
+			visibility: hidden;
+		}
+		.fixed-column {
+			position: sticky;
+			left: 0;
+			z-index: 2;
+			background-color: #fff;
+			border-right: 1px solid #ddd;
+		}
+	</style>
+
+	<h3 style="text-align:center;font-weight:bold">Calculs horaires<h3>
+			<h3 style="text-align:center;font-weight:bold">{{ nomgroupe }}<h3>
+					<h3 style="text-align:center;font-weight:bold">
+						{{ nommois }}
+						{{ annee }}</h3>
+					<p style="text-align:center">
+						<a title="Année précédente" class="btn btn-outline-primary btn-sm" href="{{ path('app_calculs_horaires',{'ancourantmoins':an,'idgroupe':idgroupe}) }}">{{'<<'}}</a>
+						<a title="Mois précédent" class="btn btn-outline-primary btn-sm" href="{{ path('app_calculs_horaires',{'moiscourantmoins':mois,'ancourant':an,'idgroupe':idgroupe}) }}">{{'<'}}</a>
+						<a title="Mois suivant" class="btn btn-outline-primary btn-sm" href="{{ path('app_calculs_horaires',{'moiscourantplus':mois,'ancourant':an,'idgroupe':idgroupe}) }}">{{'>'}}</a>
+						<a title="Année suivante" class="btn btn-outline-primary btn-sm" href="{{ path('app_calculs_horaires',{'ancourantplus':an,'idgroupe':idgroupe}) }}">{{'>>'}}</a>
+					</p>
+
+					<div class="wrapper_journal">
+						<table id="tableau" class="table table-xl table-hover table-dark table-loading" data-toggle="table" data-search="true" data-show-columns="false" data-pagination="true">
+							<thead class="table-dark">
+								<tr>
+									<th class="fixed-column" data-sortable="true">Ressource</th>
+									{% for jour, _ in resultats[0].jours %}
+										<th class="text-center">{{ jour }}</th>
+									{% endfor %}
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for ressource in resultats %}
+									<tr>
+										<td class="fixed-column">
+											<span style="white-space:nowrap;">{{ ressource.ressource }}</span>
+										</td>
+
+										{% for jour, data in ressource.jours %}
+
+											<td class="text-nowrap">{{ '%02d'|format(data.heures) }}:{{  '%02d'|format(data.minutes) }}
+											</td>
+										{% endfor %}
+										<td class="text-nowrap" style="font-weight:bold">{{ '%02d'|format( ressource.total_heures) }}:{{  '%02d'|format( ressource.total_minutes) }}
+										</td>
+
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+
+					<script>
+						window.onload = function () {
+document.getElementById('tableau').classList.remove('table-loading');
+}
+					</script>
+				{% endblock %}

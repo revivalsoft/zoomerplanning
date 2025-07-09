@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des plages
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<style>
+		@media print {
+			.no-print {
+				display: none !important;
+			}
+
+			body {
+				overflow-x: hidden;
+			}
+
+			@page {
+				margin: 1.5cm;
+			}
+
+			table {
+				font-size: 12pt;
+			}
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<h1 class="mb-4">Liste des plages</h1>
+
+	<button onclick="window.print()" class="btn btn-primary mb-3 no-print">🖨️ Imprimer</button>
+
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Sigle</th>
+				<th>Légende</th>
+				<th>Absence</th>
+				<th>Durée</th>
+				<th>Catégories</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for plage in plages %}
+				<tr>
+					<td>
+						<span style="color: {{ plage.couleurTexte }}; background-color: {{ plage.couleurFond }}; padding: 3px 8px; border-radius: 4px;">
+							{{ plage.sigle }}
+						</span>
+					</td>
+					<td>{{ plage.legende }}</td>
+					<td>{{ plage.absence ? 'Oui' : 'Non' }}</td>
+					<td>{{ plage.heure }}h
+						{{ plage.minute }}min</td>
+					<td>
+						{% set visibles = [] %}
+						{% for cat in plage.getCategorie %}
+							{% if cat.visible %}
+								{% set visibles = visibles | merge([cat]) %}
+							{% endif %}
+						{% endfor %}
+
+						{% if visibles is not empty %}
+							{% for cat in visibles %}
+								<span class="badge bg-secondary">{{ cat.nom }}</span>
+							{% endfor %}
+						{% else %}
+							<em class="text-muted">Aucune</em>
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

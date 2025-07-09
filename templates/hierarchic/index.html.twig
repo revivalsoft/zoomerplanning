@@ -1,0 +1,35 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hiérarchie
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<h2 class="text-center fw-bold mb-3">📋 Modifier l'ordre des ressources</h2>
+		<h4 class="text-center text-muted mb-4">{{ nomgroupe }}</h4>
+
+		<link rel="stylesheet" href="{{ asset('styles/bootstrap4.css') }}">
+		<script src="{{ asset('js/Sortable.min.js') }}" defer></script>
+		<script src="{{ asset('js/hierarchie.js') }}" defer></script>
+
+		<div class="card shadow-sm mx-auto" style="max-width: 600px;">
+			<div class="card-body">
+				<ul id="sortable-list" class="list-group" data-id-groupe="{{ idgroupe }}">
+					{% for item in ressources %}
+						<li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ item.id }}" style="cursor: move;">
+							<span class="fw-semibold">{{ item.nom }}</span>
+							<span class="badge bg-secondary">{{ item.fonction }}</span>
+						</li>
+					{% endfor %}
+				</ul>
+
+				<div class="text-center mt-4">
+					<button id="save-order" class="btn btn-success">
+						<i class="bi bi-save"></i>
+						Enregistrer l'ordre
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base_entry.html.twig' %}
+
+{% block title %}Notification reçue
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div class="card mx-auto shadow" style="max-width: 600px;">
+			<div class="card-header">Notification de ZoomerPlanning</div>
+			<div
+				class="card-body">
+				{# Ne plus afficher directement le message #}
+				<p class="text-muted">Vous avez reçu une nouvelle notification.</p>
+
+				<p class="text-muted text-end">
+					Envoyée le
+					{{ notification.createdAt|date('d/m/Y à H:i') }}
+				</p>
+
+				{% if notifDestId is defined %}
+					<a href="{{ path('notification_marquer_vue', { notifDestId: notifDestId, token: notification.accessToken }) }}" class="btn btn-primary mt-3">
+						Lire le message
+					</a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

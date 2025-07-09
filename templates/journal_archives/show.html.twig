@@ -1,0 +1,63 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Archives
+{% endblock %}
+
+{% block body %}
+	<div class="wrapper_journal">
+		<h3 style="text-align:center;font-weight:bold">Archives</h3>
+
+		<table class="table">
+			<tbody>
+
+				<tr>
+					<th>Type action</th>
+					<td>{{ tabtypeaction[journal.actionType] }}</td>
+				</tr>
+				<tr>
+					<th>Date action</th>
+					<td>{{ journal.actionDate ? journal.actionDate|date('d-m-Y à H:i:s','Europe/Paris') : '' }}</td>
+				</tr>
+				<tr>
+					<th>Ressource</th>
+					<td>{{ nomressource }}</td>
+				</tr>
+				<tr>
+					<th>Plage</th>
+					<td style="color:{{ ct }}; background-color:{{ cf }}">{{ sigle }}
+						-
+						{{ legende }}</td>
+				</tr>
+				<tr>
+					<th>Note</th>
+					<td>{{ journal.note }}</td>
+				</tr>
+				<tr>
+					<th>Ligne</th>
+					<td>{{ journal.ligne }}</td>
+				</tr>
+
+				<tr>
+					<th>Date plage</th>
+					<td>{{ journal.dateSigle ? journal.dateSigle|date('d-m-Y') : '' }}</td>
+				</tr>
+				<tr>
+					<th>Administrateur</th>
+					<td>{{ admin}}</td>
+				</tr>
+				<tr>
+					<th>Mail</th>
+					{% if journal.mail == false %}
+						<td>{{ 'non' }}</td>
+						}
+					{% elseif journal.mail == true %}
+						<td>{{ 'oui' }}</td>
+					{% endif %}
+				</tr>
+			</tbody>
+		</table>
+
+		<a class="btn btn-primary" href="{{ path('app_journal_archives_index') }}">Retour à la liste</a>
+
+	</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base_okr.html.twig' %}
+
+{% block body %}
+	<div class="container py-5">
+		<h1 class="text-center fw-bold mb-5">📊 Tableau de bord OKR</h1>
+
+		<div class="card shadow-sm">
+			<div class="card-body p-0">
+				<table class="table table-hover align-middle mb-0">
+					<thead class="table-primary text-center">
+						<tr>
+							<th>🎯 Objectif</th>
+							<th>📅 Dates</th>
+							<th>📈 Progression</th>
+							<th>Détails</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for entry in dashboard_data %}
+							<tr>
+								<td class="fw-semibold">{{ entry.objective.title }}</td>
+								<td class="text-muted">
+									{{ entry.objective.startDate|date('d/m/Y') }}
+									→
+									{{ entry.objective.endDate|date('d/m/Y') }}
+								</td>
+								<td>
+									<div class="progress" style="height: 22px;">
+										<div class="progress-bar
+																																											{% if entry.average_progress >= 80 %}
+																																												bg-success
+																																											{% elseif entry.average_progress >= 50 %}
+																																												bg-warning
+																																											{% else %}
+																																												bg-danger
+																																											{% endif %}" role="progressbar" style="width: {{ entry.average_progress }}%;">
+											{{ entry.average_progress }}%
+										</div>
+									</div>
+								</td>
+								<td class="text-center">
+									<a href="{{ path('objective_show', {id: entry.objective.id}) }}" class="btn btn-sm btn-outline-primary">
+										<i class="bi bi-eye"></i>
+										Voir
+									</a>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="4" class="text-center text-muted py-3">Aucun objectif défini.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+security:
+  role_hierarchy:
+    ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_USER]
+    ROLE_ADMIN: [ROLE_USER]
+
+  password_hashers:
+    App\Entity\Ressource:
+      algorithm: auto
+
+  providers:
+    app_user_provider:
+      entity:
+        class: App\Entity\Ressource
+        property: email
+
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+
+    main:
+      lazy: true
+      provider: app_user_provider
+      form_login:
+        login_path: app_security # doit correspondre à la route de login
+        check_path: app_security # idem
+        username_parameter: email
+        password_parameter: password
+        success_handler: App\Security\LoginSuccessHandler
+        default_target_path: /accueil # redirection après login réussi
+        enable_csrf: true
+      logout:
+        path: app_logout
+        target: /
+
+  access_control:
+    - { path: ^/webhook/mailtrap, roles: PUBLIC_ACCESS }
+    - { path: ^/message/form/token, roles: PUBLIC_ACCESS }
+    - { path: ^/notification/marquer-vue, roles: PUBLIC_ACCESS }
+    - { path: ^/notification, roles: PUBLIC_ACCESS }
+    - { path: ^/$, roles: PUBLIC_ACCESS }
+    - { path: ^/, roles: ROLE_USER }

@@ -1,0 +1,77 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Archives
+{% endblock %}
+
+{% block body %}
+	<div class="wrapper_journal">
+		<h3 style="text-align:center;font-weight:bold">Archives</h3>
+		<p style="text-align:center">Seuls sont pris en compte les enregistrements des lignes accessibles en connexion publique</p>
+
+		<table class="table table-sm" data-toggle="table" data-search="true" data-show-columns="false" data-pagination="true">
+			<thead class="table-dark">
+				<tr>
+
+					<th data-sortable="true">Type action</th>
+					<th data-sortable="true">Date action</th>
+					<th data-sortable="true">Ressource</th>
+					<th data-sortable="true">Plage</th>
+					<th data-sortable="true">Note</th>
+					<th data-sortable="true">Ligne</th>
+					<th data-sortable="true">Date plage</th>
+					<th data-sortable="true">Administrateur</th>
+					<th data-sortable="true">Mail</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for journal in journals %}
+					<tr>
+
+						<td>{{ tabtypeaction[journal.actionType] }}</td>
+						<td>{{ journal.actionDate ? journal.actionDate|date('d-m-Y', 'Europe/Paris') : '' }}</td>
+						<td>{{ tabressources[journal.idRes] }}</td>
+						{# <td style="text-align:center;color:{{ tabct[journal.idSigle] }}; background-color:{{ tabcf[journal.idSigle] }}">{{ tabplages[journal.idSigle] }}</td> #}
+						<td>
+							{{ tabplages[journal.idSigle] }}
+						</td>
+
+						{% if journal.note|length > 7 %}
+							{# les 7 premiers caractères #}
+							{% set commentaire = journal.note|slice(0,7) ~ '...' %}
+						{% elseif  journal.note|length > 0 and journal.note|length <= 7 %}
+							{% set commentaire = journal.note %}
+						{% elseif  journal.note|length < 1 %}
+							{% set commentaire = '' %}
+						{% endif %}
+
+						<td style="text-align:center;width:15%;">{{ commentaire }}
+						</td>
+
+						<td style="text-align:center;width:5%;">{{ journal.ligne }}</td>
+						<td>{{ journal.dateSigle ? journal.dateSigle|date('d-m-Y') : '' }}</td>
+						<td>{{ journal.administrateur.nom }}</td>
+						{% if journal.mail == false %}
+							<td>{{ 'non' }}</td>
+
+						{% elseif journal.mail == true %}
+							<td>{{ 'oui' }}</td>
+						{% endif %}
+
+						<td
+							style="text-align:center">
+							{# <a href="{{ path('app_journal_archives_show', {'id': journal.id}) }}"><img src="{{ asset('images/eye.svg') }}" alt="Détails"></a> #}
+							<a href="{{ path('app_journal_archives_show', {'id': journal.id}) }}">
+								<i class="fas fa-eye"></i>
+							</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="9">Aucun enregistrement trouvé</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

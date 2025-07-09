@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark no-print">
+	<div class="container-fluid">
+
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav"></li>
+			{% if not is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+				<li class="nav-item">
+					<a class="nav-link" href="/admin">Admin</a>
+				</li>
+			{% endif %}
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					Plannings
+				</a>
+				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<li>
+						<a class="dropdown-item" href="/choix/groupe/public">Plannings mensuels</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="/plages">Plages</a>
+					</li>
+
+				</ul>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					Objectifs
+				</a>
+				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<li>
+						<a class="dropdown-item" href="/dashboard/public">OKR</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="/gantt/public">Gantt</a>
+					</li>
+
+				</ul>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link" href="/webpush">Notifications</a>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link" href="/change-password">Mot de passe</a>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					<i class="bi bi-person-circle me-2"></i>
+					{{ app.user.email }}
+				</a>
+				<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+					<li>
+						<span class="dropdown-item disabled">Connecté</span>
+					</li>
+					<li><hr class="dropdown-divider"></li>
+					<li>
+						<a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+							Déconnexion
+						</a>
+					</li>
+				</ul>
+				<form id="logout-form" action="{{ path('app_logout') }}" method="POST" style="display: none;">
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+				</form>
+			</li>
+
+		</ul>
+	</div>
+</div></nav>

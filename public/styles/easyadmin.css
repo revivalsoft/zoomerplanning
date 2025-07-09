@@ -1,0 +1,26 @@
+@media (max-width: 768px) {
+    #navigation-toggler {
+        transform: scale(2);
+        margin-left: 10px;
+    }
+
+    .ea-navbar {
+        padding-top: 1.2rem;
+        padding-bottom: 1.2rem;
+        min-height: 80px;
+        background-color: #f2f2f2;
+    }
+
+    .ea-navbar .navbar-brand {
+        font-size: 1.6em;
+    }
+
+    .ea-navbar .navbar-nav {
+        font-size: 1.2em;
+    }
+
+    .ea-navbar .nav-link {
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+}

@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Groupe;
+use App\Repository\GroupeRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+class ChoixGroupeHierarchieController extends AbstractController
+{
+    #[Route('/choix/groupe/hierarchie', name: 'app_choix_groupe_hierarchie', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
+    public function index(GroupeRepository $groupeRepository): Response
+    {
+        $allGroupes = $groupeRepository->findAll();
+
+        // Filtrer les groupes selon les permissions
+        $accessibleGroupes = array_filter($allGroupes, function (Groupe $groupe) {
+            return $this->isGranted('VIEW', $groupe);
+        });
+
+        return $this->render('choix_groupe_hierarchie/index.html.twig', [
+            'groupes' => $accessibleGroupes,
+        ]);
+    }
+}

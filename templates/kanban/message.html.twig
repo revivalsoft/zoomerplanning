@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Écrire à l’administrateur
+{% endblock %}
+
+{% block body %}
+	<div class="container py-4">
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-10 col-lg-8">
+				<div class="card shadow-sm rounded-3">
+					<div class="card-body">
+						<h2 class="h5 mb-4 text-center">Écrire à l’administrateur
+							{# {{ admin.email }}</h2> #}
+							{{ admin.nom }}</h2>
+
+						{% if confirmation %}
+							<div class="alert alert-success">
+								✅ Votre message a bien été transmis à l’administrateur.
+							</div>
+						{% else %}
+							{{ form_start(form) }}
+							<div class="mb-3">
+								{{ form_row(form.description) }}
+							</div>
+							<div class="mb-3">
+								{{ form_row(form.submit) }}
+							</div>
+							{{ form_end(form) }}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

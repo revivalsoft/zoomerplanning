@@ -1,0 +1,54 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+get_data_by_selection:
+    path: /get-data
+    controller: App\Controller\GestionController::getDataBySelection
+
+app_gestion_new:
+    path: /new
+    controller: App\Controller\GestionController::new
+
+update_gestion:
+    path: /update-gestion/{id}
+    controller: App\Controller\GestionController::updateGestion
+    methods: [POST]
+
+delete_gestion:
+    path: /delete-gestion/{id}
+    controller: App\Controller\GestionController::delete
+    methods: [GET]
+
+get_field_value_by_name:
+    path: /get-field-value-by-name/{name}
+    controller: App\Controller\DataController::getFieldValueByName
+    methods: [GET]
+
+download_json:
+    path: /download-json
+    controller: App\Controller\ExportJsonController::downloadJson
+
+download_xml:
+    path: /download-xml
+    controller: App\Controller\ExportXmlController::downloadXml
+
+download_csv:
+    path: /download-csv
+    controller: App\Controller\ExportCsvController::downloadCsv
+
+app_hierarchie_saveorder:
+    path: /hierarchie/saveorder
+    controller: App\Controller\HierarchieController::saveOrder
+    methods: POST
+
+webhook_mailtrap:
+    path: /webhook/mailtrap
+    controller: App\Controller\MailtrapWebhookController::handle
+    methods: [POST]
+# api_plages:
+#     path: /api/plages{categorieId}
+#     controller: App\Controller\ApiPlagesController::getPlages
+#     methods: [GET]

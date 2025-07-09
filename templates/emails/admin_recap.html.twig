@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Récapitulatif des mails envoyés</title>
+	</head>
+	<body style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+		<div style="max-width: 700px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 6px;">
+			<h2 style="color: #2c3e50;">Récapitulatif des mails envoyés à vos ressources</h2>
+
+			{% for mail, lignes in contenus %}
+				<h4 style="margin-top: 25px; color: #555;">{{ mail }}</h4>
+				<ul>
+					{% for ligne in lignes %}
+						<li style="font-size: 15px; color: #333;">{{ ligne }}</li>
+					{% endfor %}
+				</ul>
+			{% endfor %}
+
+			<p style="margin-top: 30px; font-size: 13px; color: #888;">
+				Ce récapitulatif est généré automatiquement par l'application.
+			</p>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,15 @@
+App\Entity\Ressource:
+  constraints:
+    - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+        fields: ["email"]
+        message: "Cette adresse mail est déjà utilisée."
+
+    - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+        fields: ["nom"]
+        message: "Ce nom est déjà utilisé."
+
+App\Entity\Plage:
+  constraints:
+    - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+        fields: ["sigle"]
+        message: "Ce sigle existe déjà."

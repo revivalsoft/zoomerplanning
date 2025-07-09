@@ -1,0 +1,104 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Calculs des plages
+{% endblock %}
+
+{% block body %}
+	<style>
+		.table-loading {
+			visibility: hidden;
+		}
+
+		.fixed-column {
+			position: sticky;
+			left: 0;
+			z-index: 2;
+			background-color: #fff;
+			border-right: 1px solid #ddd;
+		}
+	</style>
+
+
+	<h3 style="text-align:center;font-weight:bold">Calcul des plages</h3>
+
+	<div class="wrapper">
+
+		{{ form_start(form, {'attr': {'class': 'p-3 border rounded'}}) }}
+		{# Ajout de padding et d'une bordure pour le formulaire #}
+
+		<div class="row">
+			<div class="col-md-6 mb-3">
+				{{ form_row(form.groupe, {'attr': {'class': 'form-control'}}) }}
+				{# Applique le style de Bootstrap pour un champ de texte #}
+			</div>
+			<div class="col-md-6 mb-3">
+				{{ form_row(form.categorie, {'attr': {'class': 'form-control'}}) }}
+				{# Idem pour la catégorie #}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6 mb-3">
+				{{ form_row(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+				{# Applique à la date de début #}
+			</div>
+			<div class="col-md-6 mb-3">
+				{{ form_row(form.dateFin, {'attr': {'class': 'form-control'}}) }}
+				{# Applique à la date de fin #}
+			</div>
+		</div>
+
+		<button class="btn btn-sm btn-primary" type="submit">Filtrer</button>
+		{# Applique le style Bootstrap au bouton #}
+
+		{{ form_end(form) }}
+
+	</div>
+
+	<div class="wrapper">
+
+		{% if sigles is not empty %}
+
+
+			<table id="tableau" class="table table-sm table-loading" data-toggle="table" data-search="true" data-show-columns="false" data-pagination="true">
+
+				<thead class="table-dark">
+					<tr>
+						<th class="fixed-column" data-sortable="true">Ressource</th>
+						{% for sigle in sigles %}
+							<th>{{ sigle.sigle }}</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+
+					{% for ressourceId, ressourceData in totauxParRessource %}
+						<tr>
+							<td class="fixed-column">
+								<span style="white-space:nowrap;">{{ ressourceData.nom }}</span>
+							</td>
+							{% for sigle in sigles %}
+								<td style="text-align:center">
+									{{ ressourceData.sigles[sigle.sigle] | default(0) }}
+								</td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+		{% else %}
+			{% if formSubmitted %}
+				{% if sigles is empty %}
+					<p>Aucune donnée trouvée pour les critères sélectionnés.</p>
+				{% endif %}
+			{% endif %}
+		{% endif %}
+	</div>
+
+	<script>
+		window.onload = function () {
+document.getElementById('tableau').classList.remove('table-loading');
+};
+	</script>
+{% endblock %}

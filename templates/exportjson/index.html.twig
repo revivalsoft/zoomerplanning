@@ -1,0 +1,42 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Export Json
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<h2 class="text-center mb-4 fw-bold">📁 Générer un fichier JSON</h2>
+
+		<div class="card shadow-sm mx-auto" style="max-width: 500px;">
+			<div class="card-body">
+				{{ form_start(form) }}
+
+				<div class="mb-3">
+					{{ form_label(form.start_date, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.start_date, {'attr': {'class': 'form-control'}}) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(form.end_date, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.end_date, {'attr': {'class': 'form-control'}}) }}
+				</div>
+
+				<div class="text-center mt-4">
+					<button type="submit" class="btn btn-primary">
+						<i class="bi bi-file-earmark-code"></i>
+						Générer le JSON
+					</button>
+				</div>
+
+				{{ form_end(form) }}
+			</div>
+		</div>
+
+		{% if newFileGenerated %}
+			<div class="alert alert-success text-center mt-4">
+				✅ Le fichier JSON est prêt.
+				<a href="{{ path('download_json') }}" class="alert-link">Cliquez ici pour le télécharger.</a>
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

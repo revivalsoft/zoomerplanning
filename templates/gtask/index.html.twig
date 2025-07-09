@@ -1,0 +1,60 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Liste des tâches
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1>Liste des tâches</h1>
+
+		<table class="table table-bordered mt-3">
+			<thead class="table-light">
+				<tr>
+					<th>Nom</th>
+					<th>Début</th>
+					<th>Fin</th>
+					<th>Statut</th>
+					<th>Projet</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for gtask in gtasks %}
+					<tr>
+						<td>{{ gtask.name }}</td>
+						<td>{{ gtask.startDate ? gtask.startDate|date('d/m/Y') : '' }}</td>
+						<td>{{ gtask.endDate ? gtask.endDate|date('d/m/Y') : '' }}</td>
+						<td>
+							{% if gtask.status == 'todo' %}
+								En attente
+							{% elseif gtask.status == 'in_progress' %}
+								En cours
+							{% elseif gtask.status == 'done' %}
+								Terminé
+							{% else %}
+								{# Inconnu #}
+								En attente
+							{% endif %}
+						</td>
+						<td>{{ gtask.project.name }}</td>
+						<td>
+							<a href="{{ path('gtask_edit', { id: gtask.id }) }}" class="btn btn-sm btn-primary">Modifier</a>
+							<form method="post" action="{{ path('gtask_delete', { id: gtask.id }) }}" style="display:inline-block;" onsubmit="return confirm('Confirmer la suppression ?');">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ gtask.id) }}">
+								<button class="btn btn-sm btn-danger">Supprimer</button>
+							</form>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6" class="text-center">Aucune tâche trouvée.</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<a href="{{ path('project_index') }}" class="btn btn-success">Retour</a>
+
+
+	</div>
+{% endblock %}

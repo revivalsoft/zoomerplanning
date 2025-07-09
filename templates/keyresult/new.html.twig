@@ -1,0 +1,40 @@
+{% extends 'base_okr.html.twig' %}
+
+{% block body %}
+	<div class="container py-5">
+		<h2 class="text-center fw-bold mb-4">➕ Ajouter un nouveau Key Result</h2>
+
+		{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+		<div class="card shadow-sm mx-auto" style="max-width: 700px;">
+			<div class="card-body">
+				{{ form_start(form) }}
+
+				<div class="mb-4">
+					{{ form_row(form.title) }}
+				</div>
+
+				<div class="row g-3">
+					<div class="col-md-4">
+						{{ form_row(form.initialValue) }}
+					</div>
+					<div class="col-md-4">
+						{{ form_row(form.currentValue) }}
+					</div>
+					<div class="col-md-4">
+						{{ form_row(form.targetValue) }}
+					</div>
+				</div>
+
+				{{ form_end(form) }}
+			</div>
+		</div>
+
+		<div class="text-center mt-4">
+			<a href="{{ path('objective_index') }}" class="btn btn-outline-secondary">
+				<i class="bi bi-arrow-left me-1"></i>
+				Retour à la liste
+			</a>
+		</div>
+	</div>
+{% endblock %}

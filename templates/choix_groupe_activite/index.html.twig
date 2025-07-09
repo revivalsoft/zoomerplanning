@@ -1,0 +1,38 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Groupes
+{% endblock %}
+
+{% block body %}
+	<div class="wrapper">
+		<h3 style="text-align:center;font-weight:bold">Ouvrir un groupe</h3>
+
+
+		<table class="table table-sm" data-toggle="table" data-search="true" data-show-columns="false" data-pagination="true">
+			<thead class="table-dark">
+				<tr>
+					<th data-sortable="true">Nom</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for groupe in groupes %}
+					<tr>
+
+						<td style="width:90%">{{ groupe.nom }}</td>
+						<td
+							style="text-align:center">
+							{# <a class="btn btn-outline-primary btn-sm" href="{{ path('app_activite', {'idgroupe': groupe.id}) }}">Ouvrir</a> #}
+							<a class="btn btn-outline-primary btn-sm" href="{{ path('app_calculs_horaires', {'idgroupe': groupe.id}) }}">Ouvrir</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="3">Aucun groupe trouvé</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+	</div>
+{% endblock %}

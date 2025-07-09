@@ -1,0 +1,93 @@
+$(function () {
+
+    $('table td').on('click', (function () {
+
+        var idplan = 0;
+
+        var cell = $(this).attr('id');
+
+        var cellGantt = $(this).attr('id');
+
+        if (cell != null) { // sinon génère des erreurs dans la console javascript
+            var tabcell = cell.split('-');
+
+            var idressource = tabcell[0];
+            var numjour = tabcell[1];
+            var numligne = tabcell[2];
+            idplan = tabcell[3];
+            var nummois = tabcell[4];
+            var numan = tabcell[5];
+
+            var nomressource = document.getElementById('r' + idressource).innerHTML;
+
+            var fonctionressource = document.getElementById('r' + idressource).title;
+
+            var cellbackcolor = document.getElementById(cell).style.backgroundColor;
+            var cellcolor = document.getElementById(cell).style.color;
+            var celltext = document.getElementById(cell).innerHTML;
+            var cellnote = document.getElementById(cell).title;
+
+            var sigle = celltext;
+
+            document.getElementById('nomressource').innerHTML = "Ressource : " + nomressource;
+            document.getElementById('fonctionressource').innerHTML = "Fonction : " + fonctionressource;
+            document.getElementById('numligne').innerHTML = "Ligne : " + numligne;
+            document.getElementById('date').innerHTML = 'Date : ' + numjour + '-' + nummois + '-' + numan;
+            document.getElementById('sigle').style.backgroundColor = cellbackcolor;
+            document.getElementById('sigle').style.color = cellcolor;
+            //document.getElementById('sigle').innerHTML = celltext;
+            document.getElementById('note').innerHTML = cellnote;
+
+            //ajout infos gantt si une case gantt est cliquée
+            //id="16-25-3-19-6-2025" data-task-id="19" data-task-name="Ma première tâche" data-task-start="2025-06-23" data-task-end="2025-06-30" 
+            document.getElementById('taskinfo').innerHTML = "";
+            var element = document.getElementById(cellGantt);
+            var ganttName = element.dataset.taskName;
+            var ganttStart = element.dataset.taskStart;
+            let ganttStartFr = new Date(ganttStart).toLocaleDateString('fr-FR');
+            var ganttEnd = element.dataset.taskEnd;
+            let ganttEndFr = new Date(ganttEnd).toLocaleDateString('fr-FR');
+            if (ganttName != null) {
+                document.getElementById('taskinfo').innerHTML = ganttName + "<br> Période : " + ganttStartFr + " -> " + ganttEndFr;
+                document.getElementById('sigle').innerHTML = "";
+            }
+
+            // condition pour click si case blanche
+            if (idplan > 0) {
+                if (ganttName == null) {
+                    fetchFieldValueByName(sigle);
+                    document.getElementById('taskinfo').innerHTML = "";
+                }
+            }
+
+
+            var modal = document.getElementById("myModal");
+            modal.style.display = "block";
+
+            var btn = document.getElementById("fermer");
+            btn.addEventListener("click", closeDialog);
+
+            function closeDialog() {
+                idplan = 0;
+                modal.style.display = "none";
+            }
+
+            // ajax requete pour trouver la légende correspondant au nom du sigle sélectionné
+            //combiné avec DataController et routes.yaml
+            function fetchFieldValueByName(name) {
+                fetch(`/get-field-value-by-name/${encodeURIComponent(name)}`)
+                    .then(response => {
+
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('sigle').innerHTML = celltext + ' - ' + data.value;
+                    });
+            }
+            // fin ajax
+        }
+
+
+    }));
+});
+

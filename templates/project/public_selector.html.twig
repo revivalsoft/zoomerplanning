@@ -1,0 +1,35 @@
+{% extends 'base_user.html.twig' %}
+
+{% block title %}Projets publics – Gantt
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h2>Accès public aux projets</h2>
+
+		<form method="get" action="" onsubmit="return goToGantt();">
+			<div class="mb-3">
+				<label for="projectSelect" class="form-label">Sélectionnez un projet :</label>
+				<select id="projectSelect" class="form-select" required>
+					<option value="">-- Choisir un projet --</option>
+					{% for project in projects %}
+						<option value="{{ path('project_gantt_public', { id: project.id }) }}">
+							{{ project.name }}
+						</option>
+					{% endfor %}
+				</select>
+			</div>
+			<button type="submit" class="btn btn-primary">Voir le Gantt</button>
+		</form>
+	</div>
+
+	<script>
+		function goToGantt() {
+const url = document.getElementById('projectSelect').value;
+if (url) {
+window.location.href = url;
+}
+return false;
+}
+	</script>
+{% endblock %}

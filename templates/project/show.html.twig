@@ -1,0 +1,52 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Projet -
+	{{ project.name }}
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1 class="mb-4">Projet :
+			{{ project.name }}</h1>
+
+
+		<div class="mb-3">
+			<strong>Description :</strong><br>
+			{{ project.description|default('Aucune description') }}
+		</div>
+
+		<div class="mb-3">
+			<strong>Date de début :</strong>
+			{{ project.startDate ? project.startDate|date('d/m/Y') : 'Non définie' }}
+		</div>
+
+		<hr>
+
+		<h3 class="mt-4">Tâches associées</h3>
+		{% if project.gtasks|length > 0 %}
+			<ul class="list-group mb-4">
+				{% for gtask in project.gtasks %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<div>
+							<strong>{{ gtask.name }}</strong><br>
+							<small>Début :
+								{{ gtask.startDate|date('d/m/Y') }}
+								- Fin :
+								{{ gtask.endDate|date('d/m/Y') }}</small>
+						</div>
+
+						<a href="{{ path('gtask_edit', { id: gtask.id }) }}" class="btn btn-sm btn-outline-primary">
+							<i class="bi bi-pencil"></i>
+							Modifier</a>
+					</li>
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	<p class="text-muted">Aucune tâche pour ce projet.</p>
+{% endif %}
+
+<a href="{{ path('gtask_new', { project: project.id }) }}" class="btn btn-success me-2">➕ Ajouter une tâche</a>
+<a href="{{ path('project_edit', { id: project.id }) }}" class="btn btn-primary me-2">Modifier le projet</a>
+<a href="{{ path('project_index') }}" class="btn btn-secondary">Retour à la liste</a></div>{% endblock %}

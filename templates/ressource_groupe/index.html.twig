@@ -1,0 +1,67 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block body %}
+	<script src="{{ asset('js/Sortable.min.js') }}" defer></script>
+	<script src="{{ asset('js/ressource_groupe.js') }}" defer></script>
+
+	<div class="container py-4">
+		<h1 class="text-center mb-5">🔄 Groupe Express</h1>
+
+		<div
+			class="row g-4">
+			<!-- Colonne de gauche -->
+			<div class="col-12 col-md-6">
+				<div class="card shadow-sm">
+					<div class="card-header bg-light">
+						<h5 class="mb-0">📤 Origine</h5>
+					</div>
+					<div class="card-body">
+						<div class="mb-3">
+							<label for="groupes-left" class="form-label">Sélectionner un groupe</label>
+							<select id="groupes-left" class="form-select">
+								<option value="">-- Choisir --</option>
+								{% for groupe in groupes %}
+									<option value="{{ groupe.id }}">{{ groupe.nom }}</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div>
+							<label for="ressources-left" class="form-label">Ressources</label>
+							<ul
+								id="ressources-left" class="list-group min-vh-25" style="min-height: 200px;">{# Les éléments seront chargés dynamiquement via JS #}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Colonne de droite -->
+			<div class="col-12 col-md-6">
+				<div class="card shadow-sm">
+					<div class="card-header bg-light">
+						<h5 class="mb-0">📥 Destination</h5>
+					</div>
+					<div class="card-body">
+						<div class="mb-3">
+							<label for="groupes-right" class="form-label">Sélectionner un groupe</label>
+							<select id="groupes-right" class="form-select">
+								<option value="">-- Choisir --</option>
+								{% for groupe in groupes %}
+									<option value="{{ groupe.id }}">{{ groupe.nom }}</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div>
+							<label for="ressources-right" class="form-label">Ressources</label>
+							<ul
+								id="ressources-right" class="list-group min-vh-25" style="min-height: 200px;">{# Les éléments seront chargés dynamiquement via JS #}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

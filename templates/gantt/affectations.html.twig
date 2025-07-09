@@ -1,0 +1,70 @@
+{% extends 'base_admin.html.twig' %}
+{% block body %}
+	<div class="container mt-4">
+		<h1>Affectation des ressources</h1>
+
+		{% for label, messages in app.flashes %}
+			<div class="alert alert-{{ label }}">
+				{% for message in messages %}
+					<p>{{ message }}</p>
+				{% endfor %}
+			</div>
+		{% endfor %}
+
+
+		<div class="d-flex justify-content-center mt-4">
+			<form method="get" action="{{ path('gantt_affectations') }}" class="card shadow-sm p-4" style="min-width:340px; max-width:400px;">
+				<div class="mb-3">
+					<label for="project" class="form-label fw-semibold">Choisissez un projet</label>
+					<select name="project" id="project" class="form-select" onchange="this.form.submit()">
+						<option value="">Sélectionner un projet</option>
+						{% for project in projects %}
+							<option value="{{ project.id }}" {% if selectedProject and selectedProject.id == project.id %} selected {% endif %}>
+								{{ project.name }}
+							</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="form-text text-muted">
+					Sélectionnez un projet pour afficher les tâches à affecter.
+				</div>
+			</form>
+		</div>
+
+
+		{% if selectedProject %}
+			<form method="post">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Tâche</th>
+							<th>Ressources affectées</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						{% for task in tasks %}
+							<tr>
+								<td>{{ task.name }}</td>
+								<td>
+									<div class="d-flex flex-wrap" style="gap: 1em;">
+										{% for ressource in ressources %}
+											<div class="form-check">
+												<input class="form-check-input" type="checkbox" name="ressources_{{ task.id }}[]" value="{{ ressource.id }}" id="ressource_{{ task.id }}_{{ ressource.id }}" {% for gr in task.gtaskResources %} {% if gr.ressource.id == ressource.id %} checked {% endif %} {% endfor %}>
+												<label class="form-check-label" for="ressource_{{ task.id }}_{{ ressource.id }}">
+													{{ ressource.nom }}
+												</label>
+											</div>
+										{% endfor %}
+									</div>
+								</td>
+							</tr>
+						{% endfor %}
+
+					</tbody>
+				</table>
+				<button class="btn btn-success">Enregistrer</button>
+			</form>
+		{% endif %}
+	</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base_okr.html.twig' %}
+
+{% block title %}Objectifs
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h2 class="fw-bold mb-0">🎯 Liste des Objectifs</h2>
+			<a href="{{ path('objective_new') }}" class="btn btn-success">
+				<i class="bi bi-plus-circle"></i>
+				Nouvel objectif
+			</a>
+		</div>
+
+		<div class="card shadow-sm">
+			<ul class="list-group list-group-flush">
+				{% for objective in objectives %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<a href="{{ path('objective_show', {id: objective.id}) }}" class="fw-semibold text-decoration-none">
+							{{ objective.title }}
+						</a>
+						<div class="d-flex gap-2">
+							<a href="{{ path('objective_edit', {id: objective.id}) }}" class="btn btn-sm btn-outline-primary">
+								<i class="bi bi-pencil"></i>
+								Éditer
+							</a>
+							<form method="post" action="{{ path('objective_delete', {id: objective.id}) }}" onsubmit="return confirm('Confirmer la suppression ?');">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objective.id) }}">
+								<button class="btn btn-sm btn-outline-danger">
+									<i class="bi bi-trash"></i>
+									Supprimer
+								</button>
+							</form>
+						</div>
+					</li>
+				{% else %}
+					<li class="list-group-item text-muted text-center">Aucun objectif trouvé.</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

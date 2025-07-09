@@ -1,0 +1,89 @@
+{# {% extends 'base_entry.html.twig' %}
+
+{% block title %}Zoomerplanning
+{% endblock %}
+
+{% block body %}
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+		}
+		body {
+			background: #f8f9fa;
+		}
+		.container-vertical {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			/* Retirer justify-content pour ne pas centrer verticalement */
+			padding-top: 20px; /* espace réduit au-dessus */
+			/* height: auto; pas besoin de hauteur fixe */
+		}
+		.container-vertical img {
+			max-width: 300px;
+			max-height: 200px;
+			margin-bottom: 30px;
+			object-fit: contain;
+		}
+		.btn-container {
+			text-align: center;
+		}
+		.btn-container a {
+			min-width: 200px;
+			margin: 10px;
+			font-size: 1.25rem;
+		}
+	</style>
+
+	<div class="container-vertical">
+		<h1>ZOOMERPLANNING</h1>
+		<img src="{{ asset('images/planning.jpg') }}" alt="planning"/>
+		<div class="btn-container">
+			<a href="{{ path('app_login_user') }}" class="btn btn-primary btn-lg">
+				<i class="bi bi-person"></i>
+				Connexion utilisateur
+			</a>
+			<a href="{{ path('app_login') }}" class="btn btn-danger btn-lg">
+				<i class="bi bi-shield-lock"></i>
+				Connexion administrateur
+			</a>
+		</div>
+	</div>
+{% endblock %} #}
+
+{% extends 'base_entry.html.twig' %}
+
+{% block title %}ZoomerPlanning
+{% endblock %}
+
+{% block body %}
+
+	<div class="container mt-5" style="max-width: 400px;">
+
+		<h1 class="mb-4 text-center">Connexion</h1>
+
+		{% if error %}
+			<div class="alert alert-danger" role="alert">
+				{{ error.messageKey|trans(error.messageData, 'security') }}
+			</div>
+		{% endif %}
+
+		<form method="post" action="{{ path('app_security') }}">
+			<div class="mb-3">
+				<label for="inputEmail" class="form-label">Adresse email</label>
+				<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+			</div>
+
+			<div class="mb-3">
+				<label for="inputPassword" class="form-label">Mot de passe</label>
+				<input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+			</div>
+
+			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+			<button class="btn btn-primary w-100" type="submit">Se connecter</button>
+		</form>
+	</div>
+{% endblock %}

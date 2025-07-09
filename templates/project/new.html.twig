@@ -1,0 +1,63 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Créer un nouveau projet
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div class="card shadow rounded-3">
+			<div class="card-header bg-success text-white">
+				<h2 class="mb-0">Créer un projet</h2>
+			</div>
+			<div class="card-body">
+				{% form_theme form 'bootstrap_5_layout.html.twig' %}
+				{{ form_start(form) }}
+
+				<div class="mb-3">
+					{{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+					{{ form_errors(form.name) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+					{{ form_errors(form.description) }}
+				</div>
+
+				<div class="row">
+					<div class="col-md-6 mb-3">
+						{{ form_label(form.startDate, null, {'label_attr': {'class': 'form-label'}}) }}
+						{{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.startDate) }}
+					</div>
+					<div class="col-md-6 mb-3">
+						{{ form_label(form.endDate, null, {'label_attr': {'class': 'form-label'}}) }}
+						{{ form_widget(form.endDate, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.endDate) }}
+					</div>
+				</div>
+				<div class="form-check">
+					{{ form_widget(form.isPublic, {'attr': {'class': 'form-check-input'}}) }}
+					{{ form_label(form.isPublic, null, {'label_attr': {'class': 'form-check-label'}}) }}
+				</div>
+
+				{# ✅ Champ caché nécessaire au CSRF #}
+				{{ form_row(form._token) }}
+
+				<div class="d-flex justify-content-between mt-4">
+					<a href="{{ path('project_index') }}" class="btn btn-outline-secondary">
+						<i class="bi bi-arrow-left"></i>
+						Retour à la liste
+					</a>
+					<button type="submit" class="btn btn-success">
+						<i class="bi bi-check-circle"></i>
+						Créer le projet
+					</button>
+				</div>
+
+				{{ form_end(form, {'render_rest': false}) }}
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base_user.html.twig' %}
+
+{% block title %}Détails Objectifs
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<div class="card shadow-sm mx-auto" style="max-width: 700px;">
+			<div class="card-body">
+				<h2 class="card-title fw-bold text-primary">{{ objective.title }}</h2>
+				<p class="card-text text-muted">{{ objective.description }}</p>
+
+				<hr>
+
+				<h4 class="mt-4">🎯 Résultats clés</h4>
+
+				<ul class="list-group list-group-flush">
+					{% for kr in objective.keyResults %}
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span>{{ kr.title }}</span>
+							<span class="badge bg-info text-dark">{{ kr.progress }}%</span>
+						</li>
+					{% else %}
+						<li class="list-group-item text-muted">Pas de résultat clé défini.</li>
+					{% endfor %}
+				</ul>
+
+				<div class="text-center mt-4">
+					<a href="{{ path('app_dashboard_public') }}" class="btn btn-outline-secondary">
+						<i class="bi bi-arrow-left"></i>
+						Retour au tableau
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

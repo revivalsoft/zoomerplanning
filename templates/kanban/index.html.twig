@@ -1,0 +1,87 @@
+{% extends 'base_kanban.html.twig' %}
+
+
+{% block title %}Mon Kanban
+{% endblock %}
+
+{% block body %}
+	<h1 class="mb-4">Mon Kanban</h1>
+
+	<a href="{{ path('kanban_create') }}" class="btn btn-primary mb-3">Nouvelle tâche</a>
+
+	<div class="kanban d-flex gap-4">
+
+		{% set column_names = {
+        'todo': 'À faire',
+        'in_progress': 'En cours',
+        'done': 'Terminé'
+    	} %}
+
+		{% for column, tasks in tasks_by_column %}
+			<div
+				class="kanban-column">
+				{# <h3>{{ column|replace({'_': ' '})|capitalize }}</h3> #}
+				<h3>{{ column_names[column] }}</h3>
+				<ul id="{{ column }}" class="sortable list-group">
+					{% for task in tasks %}
+						<li class="list-group-item d-flex justify-content-between align-items-center flex-column" data-id="{{ task.id }}">
+							<div class="w-100 d-flex justify-content-between align-items-center">
+								<span>{{ task.title }}</span>
+								<span>
+									<a href="{{ path('kanban_edit', {'id': task.id}) }}" class="btn btn-sm btn-warning">✏</a>
+									<a href="{{ path('kanban_delete', {'id': task.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette tâche ?')">🗑</a>
+								</span>
+							</div>
+							{% if task.description %}
+								<small class="text-muted mt-1">{{ task.description }}</small>
+							{% endif %}
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endfor %}
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+	<script>
+		const columns = ['todo', 'in_progress', 'done'];
+
+function sendOrderToServer() {
+const payload = {
+columns: {}
+};
+
+columns.forEach(col => {
+const list = document.getElementById(col);
+if (list) {
+payload.columns[col] = Array.from(list.children).map(el => el.dataset.id);
+}
+});
+
+fetch('{{ path('kanban_move') }}', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(payload)
+}).then(response => response.json()).then(data => {
+if (data.status !== 'ok') {
+console.error('Erreur lors de la mise à jour');
+}
+}).catch(error => console.error('Erreur réseau', error));
+}
+
+columns.forEach(col => {
+const el = document.getElementById(col);
+if (el) {
+new Sortable(el, {
+group: 'kanban',
+animation: 150,
+onEnd: sendOrderToServer,
+filter: 'a',
+preventOnFilter: false
+});
+}
+});
+	</script>
+{% endblock %}

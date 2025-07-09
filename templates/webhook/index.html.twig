@@ -1,0 +1,51 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Webhook Events
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<h2 class="text-center fw-bold mb-4">
+			📡 Événements du
+			{{ currentDate|date('d/m/Y') }}
+		</h2>
+
+		<div class="d-flex justify-content-center gap-3 mb-4">
+			<a class="btn btn-outline-secondary" href="{{ path('webhook_index', { date: (currentDate|date('Y-m-d')|date_modify('-1 day'))|date('Y-m-d') }) }}">
+				← Jour précédent
+			</a>
+			<a class="btn btn-outline-secondary" href="{{ path('webhook_index', { date: (currentDate|date('Y-m-d')|date_modify('+1 day'))|date('Y-m-d') }) }}">
+				Jour suivant →
+			</a>
+		</div>
+
+		<div class="card shadow-sm">
+			<div class="card-body p-0">
+				<table class="table table-striped table-hover mb-0" data-toggle="table" data-pagination="true">
+					<thead class="table-dark">
+						<tr>
+							<th data-sortable="true">📧 Mail</th>
+							<th data-sortable="true">🛈 Événement</th>
+							<th data-sortable="true">👤 Administrateur</th>
+							<th data-sortable="true">📅 Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for event in events %}
+							<tr>
+								<td>{{ event.email }}</td>
+								<td>{{ event.event }}</td>
+								<td>{{ event.admin }}</td>
+								<td>{{ event.createdAt|date('d/m/Y H:i') }}</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="4" class="text-center text-muted py-3">Aucun événement trouvé pour cette date.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+{% endblock %}

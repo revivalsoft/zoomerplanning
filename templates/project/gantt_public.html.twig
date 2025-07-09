@@ -1,0 +1,136 @@
+{% extends 'base_gantt.html.twig' %}
+
+{% block title %}Diagramme de Gantt -
+	{{ project.name }}
+{% endblock %}
+
+{% block body %}
+	<div class="container my-4">
+		<h1>Diagramme de Gantt :
+			{{ project.name }}</h1>
+
+		<a href="{{ path('app_accueil') }}" class="btn btn-secondary mb-3">
+			<i class="bi bi-arrow-left"></i>
+			Retour à l'accueil
+		</a>
+		<a
+			target="_blank" href="{{ path('app_planning_gantt', { project: project.id }) }}" class="btn btn-secondary mb-3">
+			{# <i class="bi bi-printer"></i> #}
+			Planning (affectations)
+		</a>
+		<div class="btn-group mb-3">
+			<button class="btn btn-sm btn-outline-secondary no-print" onclick="window.print()">
+				<i class="bi bi-printer"></i>
+				Imprimer
+			</button>
+			<button onclick="changeView('Day')" class="btn btn-outline-primary">Jour</button>
+			<button onclick="changeView('Week')" class="btn btn-outline-primary active">Semaine</button>
+			<button onclick="changeView('Month')" class="btn btn-outline-primary">Mois</button>
+		</div>
+
+		<div id="gantt" style="border:1px solid #ccc; background:#fff; min-height: 400px;"></div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://unpkg.com/frappe-gantt@0.5.0/dist/frappe-gantt.min.js"></script>
+
+
+	<style>
+		.bar.task-waiting {
+			fill: #ffc107 !important;
+		}
+		.bar.task-inprogress {
+			fill: #0d6efd !important;
+		}
+		.bar.task-done {
+			fill: #198754 !important;
+		}
+		.bar-label {
+			fill: #000 !important;
+			font-weight: bold;
+		}
+
+		@media print {
+			.btn,
+			.btn-group,
+			.alert,
+			.form-check,
+			.navbar,
+			.no-print {
+				display: none !important;
+			}
+
+			#gantt {
+				border: none !important;
+				background: #fff !important;
+			}
+
+			#gantt-container {
+				width: 100% !important;
+				max-width: 100% !important;
+			}
+
+			/* Cacher la scrollbar horizontale */
+			body,
+			html {
+				overflow-x: hidden !important;
+			}
+
+			/* Cacher tout scroll horizontal sur les conteneurs */
+			* {
+				overflow-x: hidden !important;
+			}
+
+
+		}
+	</style>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+const gtasks = [{% for gtask in project.gtasks %}{
+id: '{{ gtask.id }}',
+name: '{{ gtask.name|e('js') }}',
+start: '{{ gtask.startDate.format('Y-m-d') }}',
+end: '{{ gtask.endDate.format('Y-m-d') }}',
+progress: {{ gtask.status == 'done' ? 100 : (gtask.status == 'in_progress' ? 50 : 0) }},
+dependencies: '{{ gtask.dependencyToIds|join(",") }}',
+custom_class: '{{ gtask.status == 'waiting' ? 'task-waiting' : (gtask.status == 'in_progress' ? 'task-inprogress' : 'task-done') }}'
+}
+{% if not loop.last %},{% endif %}{% endfor %}];
+
+if (gtasks.length === 0) {
+document.getElementById('gantt').innerHTML = '<div class="alert alert-warning">Ce projet ne contient aucune tâche.</div>';
+return;
+}
+
+const gantt = new Gantt("#gantt", gtasks, {
+view_mode: 'Week',
+language: 'fr',
+on_click: () => {},
+on_date_change: function (gtask) {
+setTimeout(() => {
+gantt.refresh(gtasks);
+}, 200);
+},
+on_progress_change: () => {},
+on_view_change: () => {}
+});
+
+
+setTimeout(() => {
+gtasks.forEach(task => {
+const bar = gantt.bars.find(b => b.task.id == task.id);
+if (bar && bar.$bar && task.custom_class) {
+bar.$bar.classList.add(task.custom_class);
+}
+});
+}, 200);
+
+window.changeView = function (mode) {
+gantt.change_view_mode(mode);
+document.querySelectorAll('.btn-group button').forEach(btn => btn.classList.remove('active'));
+document.querySelector (`.btn-group button[onclick*="${mode}"]`).classList.add('active');
+};
+});
+	</script>
+{% endblock %}

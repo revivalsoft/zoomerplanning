@@ -1,0 +1,100 @@
+{# templates/project_export/list.html.twig #}
+{# {% extends 'base_admin.html.twig' %}
+
+{% block title %}Exporter un projet comme modèle
+{% endblock %}
+
+{% block body %}
+	<h1>Exporter un projet comme modèle</h1>
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">{{ message }}</div>
+	{% endfor %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Nom du projet</th>
+				<th>Période</th>
+				<th>Exporter</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for project in projects %}
+				<tr>
+					<td>{{ project.name }}</td>
+					<td>
+						{{ project.startDate ? project.startDate|date('d/m/Y') : '-' }}
+						&rarr;
+						{{ project.endDate ? project.endDate|date('d/m/Y') : '-' }}
+					</td>
+					<td>
+						<a href="{{ path('project_export_model', {id: project.id}) }}" class="btn btn-primary btn-sm">
+							Exporter comme modèle
+						</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="3">Aucun projet trouvé.</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %} #}
+{# templates/project_export/list.html.twig #}
+{% extends 'base_admin.html.twig' %}{% block title %}
+Exporter un projet comme modèle
+{% endblock %}
+
+	{% block body %}
+		<div class="container my-4" style="max-width: 900px;"> <div class="card shadow-sm">
+			<div class="card-header bg-primary text-white">
+				<h3 class="mb-0">Exporter un projet comme modèle</h3>
+			</div>
+			<div
+				class="card-body">
+
+				{# Messages succès #}
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+					</div>
+				{% endfor %}
+
+				<div class="table-responsive">
+					<table class="table table-striped align-middle">
+						<thead class="table-light">
+							<tr>
+								<th>Nom du projet</th>
+								<th>Période</th>
+								<th>Exporter</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for project in projects %}
+								<tr>
+									<td>{{ project.name }}</td>
+									<td>
+										{{ project.startDate ? project.startDate|date('d/m/Y') : '-' }}
+										&rarr;
+										{{ project.endDate ? project.endDate|date('d/m/Y') : '-' }}
+									</td>
+									<td>
+										<a href="{{ path('project_export_model', {id: project.id}) }}" class="btn btn-primary btn-sm">
+											Exporter comme modèle
+										</a>
+									</td>
+								</tr>
+							{% else %}
+								<tr>
+									<td colspan="3" class="text-center fst-italic">Aucun projet trouvé.</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

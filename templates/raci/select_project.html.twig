@@ -1,0 +1,26 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Choisir un projet
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1>Sélection d’un projet</h1>
+
+		{% if projects is empty %}
+			<div class="alert alert-warning">Vous n’avez aucun projet associé.</div>
+		{% else %}
+			<form method="get" action="">
+				<div class="mb-3">
+					<label for="project_id" class="form-label">Projet :</label>
+					<select id="project_id" class="form-select" onchange="if(this.value) {window.location.href = '{{ path('project_raci', {'id': 'ID'}) }}'.replace('ID', this.value);}">
+						<option value="" disabled selected>-- Choisissez un projet --</option>
+						{% for project in projects %}
+							<option value="{{ project.id }}">{{ project.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</form>
+		{% endif %}
+	</div>
+{% endblock %}

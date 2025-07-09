@@ -1,0 +1,43 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}
+	<h1>Sélection d’un projet</h1>
+{% endblock %}
+
+{% block body %}
+
+	<div class="container mt-5">
+		<div class="card shadow">
+			<div class="card-header bg-primary text-white">
+				<h4 class="mb-0">Sélectionner un projet</h4>
+			</div>
+			<div class="card-body">
+				<form method="get" action="{{ path('calcul_heures_par_task', { id: 0 }) }}" onsubmit="event.preventDefault(); submitProject();">
+					<div class="mb-3">
+						<label for="project_id" class="form-label">Projet</label>
+						<select id="project_id" name="id" class="form-select" required>
+							<option value="">-- Choisir un projet --</option>
+							{% for projet in projets %}
+								<option value="{{ projet.id }}">{{ projet.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<button type="submit" class="btn btn-success">
+						Lancer le calcul
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function submitProject() {
+const select = document.getElementById('project_id');
+const projectId = select.value;
+if (projectId) {
+const url = '{{ path('calcul_heures_par_task', { id: 'PROJECT_ID' }) }}'.replace('PROJECT_ID', projectId);
+window.location.href = url;
+}
+}
+	</script>
+{% endblock %}

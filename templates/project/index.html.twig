@@ -1,0 +1,83 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Liste des projets
+{% endblock %}
+
+{% block body %}
+	<style>
+		.btn-group form .btn {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+	</style>
+	<div class="container mt-4">
+		<h1 class="mb-4">Liste des projets</h1>
+
+		<a href="{{ path('project_new') }}" class="btn btn-success mb-3">Créer un nouveau projet</a>
+		<a href="{{ path('gtask_index') }}" class="btn btn-outline-primary mb-3">
+			<i class="bi bi-list-task"></i>
+			Voir toutes les tâches
+		</a>
+
+
+		<table class="table table-bordered">
+			<thead class="table-light">
+				<tr>
+					<th>Nom</th>
+					<th>Description</th>
+					<th>Tâches</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for project in projects %}
+					<tr>
+						<td>{{ project.name }}</td>
+						<td>{{ project.description }}</td>
+						<td>{{ project.gtasks|length }}</td>
+						<td>
+							<div class="btn-group" role="group" aria-label="Actions projet">
+								<a href="{{ path('project_show', { id: project.id }) }}" class="btn btn-sm btn-outline-primary">
+									<i class="bi bi-eye"></i>
+									Voir
+								</a>
+								<a href="{{ path('project_edit', { id: project.id }) }}" class="btn btn-sm btn-outline-secondary">
+									<i class="bi bi-pencil"></i>
+									Modifier
+								</a>
+								<a href="{{ path('project_gantt', { id: project.id }) }}" class="btn btn-sm btn-outline-info">
+									<i class="bi bi-diagram-3"></i>
+									Gantt
+								</a>
+								<a href="{{ path('gtask_new', { project: project.id }) }}" class="btn btn-sm btn-outline-success">
+									<i class="bi bi-plus-circle"></i>
+									Tâche
+								</a>
+								<a target="_blank" href="{{ path('app_planning_gantt', { project: project.id }) }}" class="btn btn-sm btn-outline-info">
+									<i class="bi bi-plus-circle"></i>
+									Planning
+								</a>
+
+
+								<form method="post" action="{{ path('project_delete', {id: project.id}) }}" onsubmit="return confirm('Supprimer ce projet ?');" style="margin: 0;">
+									<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ project.id) }}">
+									<button type="submit" class="btn btn-sm btn-danger">
+										<i class="bi bi-trash"></i>
+										Supprimer
+									</button>
+								</form>
+							</div>
+
+
+						</td>
+
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="4" class="text-center">Aucun projet disponible.</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

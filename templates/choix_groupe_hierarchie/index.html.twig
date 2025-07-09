@@ -1,0 +1,42 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Groupes
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<h2 class="text-center fw-bold mb-4">📂 Ouvrir un groupe</h2>
+
+		<div class="card shadow-sm">
+			<div class="card-body p-0">
+				<table class="table table-striped table-hover mb-0" data-toggle="table" data-search="true" data-show-columns="false" data-pagination="true" data-page-size="10">
+					<thead class="table-dark text-center">
+						<tr>
+							<th data-sortable="true">Nom du groupe</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for groupe in groupes %}
+							<tr>
+								<td class="align-middle">{{ groupe.nom }}</td>
+								<td class="text-center">
+									<a href="{{ path('app_hierarchie', {'idgroupe': groupe.id}) }}" class="btn btn-sm btn-outline-primary">
+										<i class="bi bi-box-arrow-in-right"></i>
+										Ouvrir
+									</a>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="2" class="text-center text-muted py-3">
+									Aucun groupe trouvé.
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+{% endblock %}

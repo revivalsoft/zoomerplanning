@@ -1,0 +1,131 @@
+{% extends 'base_webpush.html.twig' %}
+
+{% block title %}Notifications Push
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h2 class="mb-4">Notifications Push</h2>
+		<p>Cliquez sur le bouton pour gérer vos notifications push.</p>
+		<p>Les notifications ne seront effectives que sur l'appareil à partir duquel vous activez ou désactivez les notifications.</p>
+		<p>Vous pouvez gérer les notifications sur plusieurs appareils.</p>
+		<div id="message-container"></div>
+
+		<button id="enable-push" class="btn btn-primary me-2">Activer les notifications</button>
+		<button id="disable-push" class="btn btn-danger" style="display:none;">Désactiver les notifications</button>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		document.addEventListener('DOMContentLoaded', async () => {
+const messageContainer = document.getElementById('message-container');
+
+function showMessage(text, type = 'success') {
+messageContainer.innerHTML = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${text}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+}
+
+let registration;
+try {
+registration = await navigator.serviceWorker.register('/sw.js');
+console.log("Service Worker enregistré");
+} catch (e) {
+console.error("Erreur d'enregistrement du Service Worker", e);
+showMessage("Erreur d'enregistrement du Service Worker", "danger");
+return;
+}
+
+const btnEnable = document.getElementById('enable-push');
+const btnDisable = document.getElementById('disable-push');
+
+async function updateButtons() {
+const sub = await registration.pushManager.getSubscription();
+if (sub) {
+btnEnable.style.display = 'none';
+btnDisable.style.display = 'inline-block';
+} else {
+btnEnable.style.display = 'inline-block';
+btnDisable.style.display = 'none';
+}
+}
+
+btnEnable.addEventListener('click', async () => {
+try {
+const permission = await Notification.requestPermission();
+if (permission !== 'granted') {
+showMessage('Permission refusée', 'warning');
+return;
+}
+
+const publicKey = '{{ vapidPublicKey|e('js') }}';
+const subscription = await registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey)});
+
+const response = await fetch('/webpush/subscribe', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(subscription)
+});
+
+if (response.ok) {
+showMessage('Abonnement réussi !', 'success');
+updateButtons();
+} else {
+const errorText = await response.text();
+console.error("Réponse serveur:", errorText);
+showMessage('Erreur côté serveur lors de l\'abonnement', 'danger');
+}
+} catch (e) {
+console.error(e);
+showMessage('Erreur lors de l\'abonnement', 'danger');
+}
+});
+
+btnDisable.addEventListener('click', async () => {
+try {
+const subscription = await registration.pushManager.getSubscription();
+if (! subscription) {
+showMessage('Aucun abonnement à désactiver', 'warning');
+return;
+}
+const unsubscribed = await subscription.unsubscribe();
+if (! unsubscribed) {
+showMessage('Impossible de se désabonner', 'danger');
+return;
+}
+const response = await fetch('/unsubscribe', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(subscription)
+});
+if (response.ok) {
+showMessage('Désabonnement réussi', 'success');
+updateButtons();
+} else {
+showMessage('Erreur côté serveur lors du désabonnement', 'danger');
+}
+} catch (e) {
+console.error(e);
+showMessage('Erreur lors du désabonnement', 'danger');
+}
+});
+
+function urlBase64ToUint8Array(base64String) {
+const padding = '='.repeat((4 - base64String.length % 4) % 4);
+const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+const rawData = atob(base64);
+return Uint8Array.from([... rawData].map(c => c.charCodeAt(0)));
+}
+
+updateButtons();
+});
+	</script>
+{% endblock %}

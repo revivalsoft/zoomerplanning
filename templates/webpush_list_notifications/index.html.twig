@@ -1,0 +1,64 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Zoomerplanning
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<h2 class="text-center mb-4">Liste des abonnements Web Push</h2>
+
+		<div class="row justify-content-center">
+			<div class="col-md-10 col-lg-8">
+				<table class="table table-bordered table-striped table-hover table-sm">
+					<thead class="table-light">
+						<tr>
+							<th>Nom de la ressource</th>
+							<th>Endpoint</th>
+							<th>Date de création</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for sub in subscriptions %}
+							<tr>
+								<td>{{ sub.ressource.nom }}</td>
+								<td class="text-center">
+									{% set url = sub.endpoint %}
+									{% if 'googleapis.com' in url %}
+										<img src="{{ asset('logos/google.png') }}" alt="Google Chrome" width="24" title="Google Chrome">
+									{% elseif 'mozilla.com' in url %}
+										<img src="{{ asset('logos/firefox.png') }}" alt="Firefox" width="24" title="Firefox">
+									{% elseif 'samsungosp.com' in url %}
+										<img src="{{ asset('logos/samsung.png') }}" alt="Samsung Internet" width="24" title="Samsung Internet">
+									{% elseif 'apple.com' in url %}
+										<img src="{{ asset('logos/apple.png') }}" alt="Safari / Apple" width="24" title="Safari (iOS/macOS)">
+									{% else %}
+										<img src="{{ asset('logos/unknown.png') }}" alt="Inconnu" width="24" title="Navigateur inconnu">
+									{% endif %}
+								</td>
+								<td>{{ sub.createdAt|date('d/m/Y H:i') }}</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="3" class="text-center">Aucun abonnement trouvé.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+				{% if totalPages > 1 %}
+					<nav aria-label="Navigation">
+						<ul class="pagination justify-content-center mt-4">
+							{% for i in 1..totalPages %}
+								<li class="page-item {% if i == currentPage %}active{% endif %}">
+									<a class="page-link" href="{{ path('push_subscriptions_list', {'page': i}) }}">
+										{{ i }}
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					</nav>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

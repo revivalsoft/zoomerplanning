@@ -1,0 +1,178 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Matrice RACI - Impression
+{% endblock %}
+
+{% block body %}
+	<style>
+		.flex-list {
+			display: flex;
+			flex-wrap: wrap; /* passe à la ligne si trop long */
+			padding-left: 0;
+			list-style: none;
+			gap: 15px;
+		}
+		.badge-role {
+			display: inline-block;
+			padding: 2px 6px;
+			font-weight: bold;
+			font-size: 11px;
+			border-radius: 4px;
+		}
+		/* Limiter la largeur des colonnes */
+		table {
+			border-collapse: collapse;
+			width: 100%;
+			font-size: 12px;
+			table-layout: fixed;
+		}
+		th,
+		td {
+			border: 1px solid #000;
+			padding: 4px 6px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 120px;
+			vertical-align: middle;
+			text-align: center;
+		}
+		th:first-child,
+		td:first-child {
+			text-align: left;
+			max-width: 200px;
+		}
+
+		thead th {
+			background-color: #eee;
+			position: sticky;
+			top: 0;
+			z-index: 1;
+		}
+
+
+		@media print {
+			body {
+				margin: 10mm;
+			}
+			/* Cacher la navbar */
+			nav.navbar, /* Cacher le bouton Imprimer (et autres éléments avec classe .no-print) */
+			.no-print {
+				display: none !important;
+			}
+			.badge-role,
+			thead th {
+				position: static !important;
+				-webkit-print-color-adjust: exact;
+				print-color-adjust: exact;
+			}
+		}
+	</style>
+
+	<div class="container my-4">
+
+		<h1 class="mb-4">
+			{{ project.name }}
+			(matrice)</h1>
+
+		<table>
+			<thead>
+				<tr>
+					{% if isLargeMatrix %}
+						<th>T/R</th>
+					{% else %}
+						<th>Tâches/Ressources</th>
+					{% endif %}
+
+					{% for ressource in ressources %}
+						<th>
+							{% if isLargeMatrix %}
+								{{ loop.index }}
+								-
+								{{ ressource.nom|length > 6 ? ressource.nom|slice(0,6) ~ '…' : ressource.nom }}
+							{% else %}
+								{{ ressource.nom|length > 15 ? ressource.nom|slice(0,12) ~ '...' : ressource.nom }}
+							{% endif %}
+						</th>
+
+					{% endfor %}
+				</tr>
+			</thead>
+		</tr>
+	</thead>
+	<tbody>
+		{% for task in tasks %}
+			<tr>
+
+				<td>
+					{% if isLargeMatrix %}
+						{{ loop.index }}
+						-
+						{{ task.name|length > 20 ? task.name|slice(0,20) ~ '…' : task.name }}
+					{% else %}
+						{{ task.name|length > 25 ? task.name|slice(0,22) ~ '...' : task.name }}
+					{% endif %}
+				</td>
+				{% for ressource in ressources %}
+
+					<td>
+						{% set role = matrice[task.id][ressource.id]|default('') %}
+						{% if role == 'R' %}
+							<span class="badge badge-role" style="background-color: #dc3545; color: #fff;">R</span>
+						{% elseif role == 'A' %}
+							<span class="badge badge-role" style="background-color: #0d6efd; color: #fff;">A</span>
+						{% elseif role == 'C' %}
+							<span class="badge badge-role" style="background-color: #ffc107; color: #000;">C</span>
+						{% elseif role == 'I' %}
+							<span class="badge badge-role" style="background-color: #17a2b8; color: #000;">I</span>
+						{% elseif role == 'E' %}
+							<span class="badge badge-role" style="background-color: #20c997; color: #000;">E</span>
+						{% endif %}
+					</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<div class="mt-4">
+	<h5>Légende des rôles :</h5>
+	<ul class="list-unstyled">
+		<li>
+			<span class="badge badge-role" style="background-color: #dc3545; color: #fff;">R</span>
+			Responsable – réalise la tâche</li>
+		<li>
+			<span class="badge badge-role" style="background-color: #0d6efd; color: #fff;">A</span>
+			Approuve – valide le travail</li>
+		<li>
+			<span class="badge badge-role" style="background-color: #ffc107; color: #000;">C</span>
+			Consulté – donne un avis ou un conseil</li>
+		<li>
+			<span class="badge badge-role" style="background-color: #17a2b8; color: #000;">I</span>
+			Informé – doit être tenu au courant</li>
+		<li>
+			<span class="badge badge-role" style="background-color: #20c997; color: #000;">E</span>
+			Exécutant – exécute techniquement une tâche (sous la responsabilité d’un R)</li>
+	</ul>
+</div>
+{% if isLargeMatrix %}
+	<div class="mt-5">
+		<h5>Index des tâches :</h5>
+		<ul class="list-unstyled">
+			{% for task in tasks %}
+				<li>
+					<strong>{{ loop.index }}-</strong>
+					{{ task.name }}</li>
+			{% endfor %}
+		</ul>
+
+		<h5 class="mt-4">Index des ressources :</h5>
+		<ul class="flex-list">
+			{% for ressource in ressources %}
+				<li>
+					<strong>{{ loop.index }}-</strong>
+					{{ ressource.nom }}</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endif %}
+<button onclick="window.print()" class="btn btn-primary mt-3 no-print">🖨️ Imprimer</button></div>{% endblock %}
