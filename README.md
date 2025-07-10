@@ -79,12 +79,22 @@ symfony console app:webpush:generate-vapid
 
 5. Rechargez l'environnement :
 
+En développement : 
 ```bash
 composer dump-env dev
 symfony console cache:clear
 ```
+En production :
+```bash
+composer dump-env prod
+symfony console cache:clear
+```
 
-> ⚠️ En local, les notifications push ne fonctionnent pas. Elles nécessitent **un serveur HTTPS en production**.
+## ⚠️ Attention
+
+> En local, les notifications push **ne fonctionnent pas**.  
+> Elles nécessitent **un serveur HTTPS en production**.
+
 
 ---
 
