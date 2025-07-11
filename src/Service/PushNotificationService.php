@@ -139,4 +139,31 @@ class PushNotificationService
             $this->logger->info("Subscription supprimée pour endpoint invalide : {$endpoint}");
         }
     }
+    // cette fonction ne sert que pour les tests
+    public function sendOne(PushSubscription $subscriptionEntity, array $payload): bool
+    {
+        $subscription = Subscription::create([
+            'endpoint' => $subscriptionEntity->getEndpoint(),
+            'publicKey' => $subscriptionEntity->getP256dh(),
+            'authToken' => $subscriptionEntity->getAuth(),
+            'contentEncoding' => $subscriptionEntity->getContentEncoding(),
+        ]);
+
+        try {
+            $report = $this->webPush->sendOneNotification($subscription, json_encode($payload));
+
+            $endpoint = $report->getRequest()->getUri()->__toString();
+            if ($report->isSuccess()) {
+                $this->logger->info("✅ Notification envoyée à $endpoint");
+                return true;
+            } else {
+                $this->logger->warning("⚠️ Échec d'envoi à $endpoint : {$report->getReason()}");
+                $this->removeInvalidSubscription($endpoint);
+                return false;
+            }
+        } catch (\Exception $e) {
+            $this->logger->error("❌ Exception lors de l'envoi de la notification : " . $e->getMessage());
+            return false;
+        }
+    }
 }

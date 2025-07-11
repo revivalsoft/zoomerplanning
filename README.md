@@ -129,10 +129,11 @@ https://www.mondomaine.com/webhook/mailtrap
 Installez et configurez `Supervisor` sur Debian :
 
 Fichier : `/etc/supervisor/conf.d/messenger_zoomerplanning.conf`
+(à adapter à votre configuration)
 
 ```ini
 [program:messenger_zoomerplanning]
-command=/usr/bin/php /var/www/html/zoomerplanning/ptadmin/bin/console messenger:consume async --env=prod
+command=/usr/bin/php /var/www/html/zoomerplanning/bin/console messenger:consume async --env=prod
 process_name=%(program_name)s_%(process_num)02d
 numprocs=3
 autostart=true
@@ -150,6 +151,15 @@ stderr_logfile=/var/log/supervisor/messenger_zoomerplanning_%(process_num)02d_er
 - Assurez-vous que `Supervisor` tourne correctement pour la file d’attente des messages.
 
 ---
+
+## Programe activé avec un navigateur léger (ex. : Raspberry)
+Les images incluses dans certains boutons de commande ou autres peuvent ne pas s'afficher.
+Dans ce cas, installer les fontes emoji : 
+```bash
+sudo apt update
+sudo apt install fonts-noto-color-emoji
+```
+
 
 ## 📜 Licence
 

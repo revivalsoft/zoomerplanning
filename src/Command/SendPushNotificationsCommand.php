@@ -9,7 +9,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-// controleur de test
+// ce controleur n'est utile que pour faire des tests
+// en ligne de commande : php bin/console app:send-push-to-all
 class SendPushNotificationsCommand extends Command
 {
     protected static $defaultName = 'app:send-push-to-all';
