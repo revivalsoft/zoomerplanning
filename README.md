@@ -17,7 +17,7 @@ mkdir zoomerplanning
 cd zoomerplanning
 sudo git clone https://github.com/revivalsoft/zoomerplanning.git .
 cd ..
-sudo chown -R www-data:www-data zoomerplanning
+sudo chown -R www-data:www-data zoomerplanning (en production seulement)
 cd zoomerplanning
 code .
 ```
@@ -152,7 +152,7 @@ stderr_logfile=/var/log/supervisor/messenger_zoomerplanning_%(process_num)02d_er
 
 ---
 
-## Programe activé avec un navigateur léger (ex. : Raspberry)
+## Programme activé avec un navigateur léger (ex. : Raspberry)
 Les images incluses dans certains boutons de commande ou autres peuvent ne pas s'afficher.
 Dans ce cas, installer les fontes emoji : 
 ```bash
