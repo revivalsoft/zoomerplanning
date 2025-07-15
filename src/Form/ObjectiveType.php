@@ -16,6 +16,7 @@
  * avec ce programme ; si ce n'est pas le cas, voir
  * <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Form;
 
 use App\Entity\Objective;
@@ -30,11 +31,11 @@ class ObjectiveType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, ['label' => 'Titre',])
-            ->add('description', TextareaType::class, ['label' => 'Description','required' => false])
+            ->add('description', TextareaType::class, ['label' => 'Description', 'required' => false])
             ->add('startDate', DateTimeType::class, ['label' => 'Date début'])
             ->add('endDate', DateTimeType::class, ['label' => 'Date fin'])
-            ->add('isClosed', CheckboxType::class, ['label' => 'Fermé','required' => false])
-            ->add('isPublic', CheckboxType::class, ['label' => 'Public','required' => false]);
+            ->add('isClosed', CheckboxType::class, ['label' => 'Fermé', 'required' => false])
+            ->add('isPublic', CheckboxType::class, ['label' => 'Visible ?', 'required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

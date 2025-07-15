@@ -16,6 +16,7 @@
  * avec ce programme ; si ce n'est pas le cas, voir
  * <https://www.gnu.org/licenses/>.
  */
+
 namespace App\Form;
 
 use App\Entity\Project;
@@ -51,10 +52,9 @@ class ProjectType extends AbstractType
                 'attr' => ['class' => 'btn btn-primary']
             ])
             ->add('isPublic', CheckboxType::class, [
-                'label' => 'Rendre ce projet public',
+                'label' => 'Visible pour les utilisateurs ?',
                 'required' => false,
-            ]);
-        ;
+            ]);;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
