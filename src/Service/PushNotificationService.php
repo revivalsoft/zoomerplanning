@@ -1,22 +1,5 @@
 <?php
-/*
- * Zoomerplanning - Logiciel de gestion des ressources humaines
- * Copyright (C) 2025 RevivalSoft
- *
- * Ce programme est un logiciel libre ; vous pouvez le redistribuer et/ou
- * le modifier selon les termes de la Licence Publique Générale GNU publiée
- * par la Free Software Foundation Version 3.
- *
- * Ce programme est distribué dans l'espoir qu'il sera utile,
- * mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
- * COMMERCIALISATION ou D’ADÉQUATION À UN BUT PARTICULIER. Voir la
- * Licence Publique Générale GNU pour plus de détails.
- *
- * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU
- * avec ce programme ; si ce n'est pas le cas, voir
- * <https://www.gnu.org/licenses/>.
- */
-// src/Service/PushNotificationService.php
+
 namespace App\Service;
 
 use App\Entity\Ressource;
@@ -32,7 +15,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class PushNotificationService
 {
     private EntityManagerInterface $em;
-    private WebPush $webPush;
+    private ?WebPush $webPush = null;
     private LoggerInterface $logger;
     private UrlGeneratorInterface $urlGenerator;
 
@@ -44,14 +27,7 @@ class PushNotificationService
         $this->em = $em;
         $this->logger = $logger;
         $this->urlGenerator = $urlGenerator;
-
-        $this->webPush = new WebPush([
-            'VAPID' => [
-                'subject' => $_ENV['VAPID_SUBJECT'],
-                'publicKey' => $_ENV['VAPID_PUBLIC_KEY'],
-                'privateKey' => $_ENV['VAPID_PRIVATE_KEY'],
-            ]
-        ]);
+        // on n'initialise PAS WebPush ici (pour éviter les erreurs de param au build)
     }
 
     /**
@@ -62,6 +38,8 @@ class PushNotificationService
         if (empty($ressources)) {
             return;
         }
+
+        $this->ensureWebPushInitialized();
 
         // Créer une seule NotificationMessage partagée
         $notification = new NotificationMessage();
@@ -98,8 +76,7 @@ class PushNotificationService
 
             $payload = json_encode([
                 'title' => $title,
-                //'body' => $body ?? '',
-                'body' => '',
+                'body' => $body ?? '',
                 'url' => $url,
             ]);
 
@@ -139,9 +116,12 @@ class PushNotificationService
             $this->logger->info("Subscription supprimée pour endpoint invalide : {$endpoint}");
         }
     }
+
     // cette fonction ne sert que pour les tests
     public function sendOne(PushSubscription $subscriptionEntity, array $payload): bool
     {
+        $this->ensureWebPushInitialized();
+
         $subscription = Subscription::create([
             'endpoint' => $subscriptionEntity->getEndpoint(),
             'publicKey' => $subscriptionEntity->getP256dh(),
@@ -165,5 +145,110 @@ class PushNotificationService
             $this->logger->error("❌ Exception lors de l'envoi de la notification : " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Initialise WebPush à la demande. Tente :
+     * 1) getenv / $_ENV / $_SERVER
+     * 2) parse .env.local puis .env (project root)
+     */
+    private function ensureWebPushInitialized(): void
+    {
+        if ($this->webPush !== null) {
+            return;
+        }
+
+        $vapid = $this->loadVapidFromEnvironmentOrFiles();
+
+        if (empty($vapid['publicKey']) || empty($vapid['privateKey'])) {
+            $msg = "Clés VAPID introuvables. Exécute : symfony console app:webpush:generate-vapid
+Ensuite vérifie que .env.local contient VAPID_PUBLIC_KEY et VAPID_PRIVATE_KEY, ou exporte les variables d'environnement.";
+            $this->logger->critical($msg);
+            throw new \RuntimeException($msg);
+        }
+
+        $this->webPush = new WebPush([
+            'VAPID' => [
+                'subject' => $vapid['subject'] ?? 'mailto:contact@exemple.com',
+                'publicKey' => $vapid['publicKey'],
+                'privateKey' => $vapid['privateKey'],
+            ],
+        ]);
+    }
+
+    private function loadVapidFromEnvironmentOrFiles(): array
+    {
+        // 1) Tentative via getenv / _ENV / _SERVER
+        $keys = [
+            'subject' => getenv('VAPID_SUBJECT') ?: ($_ENV['VAPID_SUBJECT'] ?? $_SERVER['VAPID_SUBJECT'] ?? null),
+            'publicKey' => getenv('VAPID_PUBLIC_KEY') ?: ($_ENV['VAPID_PUBLIC_KEY'] ?? $_SERVER['VAPID_PUBLIC_KEY'] ?? null),
+            'privateKey' => getenv('VAPID_PRIVATE_KEY') ?: ($_ENV['VAPID_PRIVATE_KEY'] ?? $_SERVER['VAPID_PRIVATE_KEY'] ?? null),
+        ];
+
+        if (!empty($keys['publicKey']) && !empty($keys['privateKey'])) {
+            return $keys;
+        }
+
+        // 2) Fallback: lire .env.local puis .env depuis la racine du projet
+        $projectDir = dirname(__DIR__, 2); // src/Service -> project root
+        foreach (['.env.local', '.env'] as $f) {
+            $path = $projectDir . DIRECTORY_SEPARATOR . $f;
+            if (!is_file($path)) {
+                continue;
+            }
+            $envs = $this->parseEnvFile($path);
+            if (empty($keys['subject']) && isset($envs['VAPID_SUBJECT'])) {
+                $keys['subject'] = $envs['VAPID_SUBJECT'];
+            }
+            if (empty($keys['publicKey']) && isset($envs['VAPID_PUBLIC_KEY'])) {
+                $keys['publicKey'] = $envs['VAPID_PUBLIC_KEY'];
+            }
+            if (empty($keys['privateKey']) && isset($envs['VAPID_PRIVATE_KEY'])) {
+                $keys['privateKey'] = $envs['VAPID_PRIVATE_KEY'];
+            }
+            if (!empty($keys['publicKey']) && !empty($keys['privateKey'])) {
+                break;
+            }
+        }
+
+        return $keys;
+    }
+
+    /**
+     * Parse un fichier .env simple (gère comments et quotes basiques)
+     */
+    private function parseEnvFile(string $path): array
+    {
+        $out = [];
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || str_starts_with($line, '#')) {
+                continue;
+            }
+            // support "export FOO=bar"
+            if (str_starts_with($line, 'export ')) {
+                $line = substr($line, 7);
+            }
+            if (!str_contains($line, '=')) {
+                continue;
+            }
+            [$k, $v] = explode('=', $line, 2);
+            $k = trim($k);
+            $v = trim($v);
+
+            // remove inline comments after a space
+            if (strpos($v, ' #') !== false) {
+                $v = preg_replace('/\s+#.*$/', '', $v);
+            }
+
+            // remove surrounding quotes if present
+            if (strlen($v) >= 2 && (($v[0] === '"' && substr($v, -1) === '"') || ($v[0] === "'" && substr($v, -1) === "'"))) {
+                $v = substr($v, 1, -1);
+            }
+
+            $out[$k] = $v;
+        }
+        return $out;
     }
 }
